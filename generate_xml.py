@@ -26,6 +26,10 @@ def set_up_argparse():
 	return opts
 
 
+def log(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 def check_file_exists(filepath, file_description):
 	"""
 	A function to check if a file exists.
@@ -39,8 +43,13 @@ def check_file_exists(filepath, file_description):
 	"""
 
 	if not os.path.exists(filepath):
-		print("The " + file_description + " (" + filepath + ") does not exist!")
+		log("The " + file_description + " (" + filepath + ") does not exist!")
 		sys.exit(1)
+
+
+def make_dir_if_not_exist(dir_name):
+	if not os.path.exists(dir_name):
+		os.makedirs(dir_name)
 
 
 def _project(projects):
@@ -221,29 +230,33 @@ def to_dict(data, sheet):
 
 
 def import_spreadsheet_data(file):
-	data = get_data(file)
+	return( get_data(file) )
+
+
+def generate_xml_files(data, out_dir):
+	out_dir = os.path.normpath(out_dir)
 
 	for sheet in data:
-		print("Processing sheet: {}".format(sheet))
-		
+		log("Processing sheet: {}...".format(sheet))
+				
 		if sheet == "project":
 			projects = to_dict(data, sheet)
-			with open("project.xml", "w") as file:
+			with open(out_dir+"/project.xml", "w") as file:
 				file.write(_project(projects))
 
 		if sheet == "sample":
 			samples = to_dict(data, sheet)
-			with open("sample.xml", "w") as file:
+			with open(out_dir+"/sample.xml", "w") as file:
 				file.write(_sample(samples))
 
 		if sheet == "experiment":
 			experiments = to_dict(data, sheet)
-			with open("experiment.xml", "w") as file:
+			with open(out_dir+"/experiment.xml", "w") as file:
 				file.write(_experiment(experiments))
 
 		if sheet == "run":
 			runs = to_dict(data, sheet)
-			with open("run.xml", "w") as file:
+			with open(out_dir+"/run.xml", "w") as file:
 				file.write(_run(runs))
 
 
@@ -257,10 +270,15 @@ def md5sum(filename, blocksize = 65536):
 
 
 def main(opts):
+
+	# are files exist 
 	check_file_exists(opts.data_dir, "data directory")
-	check_file_exists(opts.out_dir, "output directory")
 	check_file_exists(opts.spreadsheet_file, "spreadsheet file")
-	import_spreadsheet_data(opts.spreadsheet_file)
+	make_dir_if_not_exist(opts.out_dir)
+
+	# process data
+	submit_data = import_spreadsheet_data(opts.spreadsheet_file)
+	generate_xml_files(submit_data, opts.out_dir)
 
 
 if __name__ == "__main__":
