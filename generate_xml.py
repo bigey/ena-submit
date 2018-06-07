@@ -52,7 +52,7 @@ def make_dir_if_not_exist(dir_name):
 		os.makedirs(dir_name)
 
 
-def _project(projects):
+def _project_xml(projects):
 	doc, tag, text = Doc().tagtext()
 
 	with tag("PROJECT_SET"):
@@ -74,7 +74,7 @@ def _project(projects):
 	return(result)
 
 
-def _sample(samples):
+def _sample_xml(samples):
 	doc, tag, text = Doc().tagtext()
 
 	with tag("SAMPLE_SET"):
@@ -131,7 +131,7 @@ def _sample(samples):
 	return(result)
 
 
-def _experiment(experiments):
+def _experiment_xml(experiments):
 	doc, tag, text = Doc().tagtext()
 
 	with tag("EXPERIMENT_SET"):
@@ -186,7 +186,7 @@ def _experiment(experiments):
 	return(result)
 
 
-def _run(runs):
+def _run_xml(runs, data_dir):
 	doc, tag, text = Doc().tagtext()
 
 	with tag("RUN_SET"):
@@ -205,15 +205,27 @@ def _run(runs):
 							filename = run["filename_r1"],
 							filetype = run["filetype"],
 							checksum_method = "MD5",
-							checksum = md5sum(run["filename_r1"]))
+							checksum = md5sum(data_dir+"/"+run["filename_r1"]))
 
 						if "filename_r2" in run:
 							doc.stag("FILE", 
 								filename = run["filename_r2"], 
 								filetype = run["filetype"],
 								checksum_method = "MD5",
-								checksum = md5sum(run["filename_r2"]))
+								checksum = md5sum(data_dir+"/"+run["filename_r2"]))
 	
+	result = indent(doc.getvalue())
+	return(result)
+
+
+def _submission_xml():
+	doc, tag, text = Doc().tagtext()
+
+	with tag("SUBMISSION"):
+		with tag("ACTIONS"):
+			with tag("ACTION"):
+				doc.stag("ADD")
+
 	result = indent(doc.getvalue())
 	return(result)
 
@@ -234,7 +246,7 @@ def import_spreadsheet_data(file):
 	return( get_data(file) )
 
 
-def generate_xml_files(data, out_dir):
+def generate_xml_files(data, data_dir, out_dir):
 	out_dir = os.path.normpath(out_dir)
 	log("Generating XML files...")
 
@@ -244,22 +256,25 @@ def generate_xml_files(data, out_dir):
 		if sheet == "project":
 			projects = to_dict(data, sheet)
 			with open(out_dir+"/project.xml", "w") as file:
-				file.write(_project(projects))
+				file.write(_project_xml(projects))
 
 		if sheet == "sample":
 			samples = to_dict(data, sheet)
 			with open(out_dir+"/sample.xml", "w") as file:
-				file.write(_sample(samples))
+				file.write(_sample_xml(samples))
 
 		if sheet == "experiment":
 			experiments = to_dict(data, sheet)
 			with open(out_dir+"/experiment.xml", "w") as file:
-				file.write(_experiment(experiments))
+				file.write(_experiment_xml(experiments))
 
 		if sheet == "run":
 			runs = to_dict(data, sheet)
 			with open(out_dir+"/run.xml", "w") as file:
-				file.write(_run(runs))
+				file.write(_run_xml(runs, data_dir))
+
+	with open(out_dir+"/submission.xml", "w") as file:
+				file.write(_submission_xml())
 
 
 def md5sum(filename, blocksize = 65536):
@@ -280,7 +295,7 @@ def main(opts):
 
 	# process data
 	submit_data = import_spreadsheet_data(opts.spreadsheet_file)
-	generate_xml_files(submit_data, opts.out_dir)
+	generate_xml_files(submit_data, opts.data_dir, opts.out_dir)
 
 
 if __name__ == "__main__":
