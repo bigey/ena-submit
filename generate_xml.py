@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import argparse
+import argparse, hashlib
 from yattag import Doc, indent
 from pyexcel_ods import get_data
 
 
 def set_up_argparse():
-	parser = argparse.ArgumentParser(description="""
+	parser = argparse.ArgumentParser(description = """
 	This tool will generate xml files to submit to ENA repository
 	""")
 	
@@ -167,17 +167,17 @@ def _run(runs):
 					with tag("FILES"):
 
 						doc.stag("FILE", 
-							filename=run["filename_r1"], 
-							filetype=run["filetype"],
-							checksum_method="MD5",
-							checksum=run["checksum_r1"])
+							filename = run["filename_r1"],
+							filetype = run["filetype"],
+							checksum_method = "MD5",
+							checksum = md5sum(run["filename_r1"]))
 
 						if "filename_r2" in run:
 							doc.stag("FILE", 
-								filename=run["filename_r2"], 
-								filetype=run["filetype"],
-								checksum_method="MD5",
-								checksum=run["checksum_r2"])
+								filename = run["filename_r2"], 
+								filetype = run["filetype"],
+								checksum_method = "MD5",
+								checksum = md5sum(run["filename_r2"]))
 	
 	result = indent(doc.getvalue())
 	return(result)
@@ -219,6 +219,15 @@ def import_spreadsheet_data(file = "ena_submission_spreadsheet.ods"):
 			runs = to_dict(data, sheet)
 			with open("run.xml", "w") as file:
 				file.write(_run(runs))
+
+
+def md5sum(filename, blocksize=65536):
+	hash = hashlib.md5()
+	with open(filename, "rb") as f:
+		for block in iter(lambda: f.read(blocksize), b""):
+			hash.update(block)
+
+	return hash.hexdigest()
 
 
 def main():
