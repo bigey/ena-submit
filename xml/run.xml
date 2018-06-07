@@ -1,0 +1,11 @@
+<RUN_SET>
+  <RUN alias="spo_run_0000">
+    <EXPERIMENT_REF refname="spo_exp_0000" />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE checksum_method="MD5" filetype="fastq" filename="spo_read_0000_R1.fastq.gz" checksum="8536e51fb048b0bef15dc3a818ff17ae" />
+        <FILE checksum_method="MD5" filetype="fastq" filename="spo_read_0000_R2.fastq.gz" checksum="7ad8893c33743033013867beb81cc7e4" />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+</RUN_SET>

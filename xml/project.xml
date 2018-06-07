@@ -1,0 +1,9 @@
+<PROJECT_SET>
+  <PROJECT alias="spo_proj_0000">
+    <TITLE>Diversity of yeast isolated from Lunar soils</TITLE>
+    <DESCRIPTION>This study aimed to characterise the microbial diversity of yeasts isolated from Lunar soils</DESCRIPTION>
+    <SUBMISSION_PROJECT>
+      <SEQUENCING_PROJECT />
+    </SUBMISSION_PROJECT>
+  </PROJECT>
+</PROJECT_SET>
