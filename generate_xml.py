@@ -230,14 +230,16 @@ def to_dict(data, sheet):
 
 
 def import_spreadsheet_data(file):
+	log("Processing spreadsheet file {}...".format(file))
 	return( get_data(file) )
 
 
 def generate_xml_files(data, out_dir):
 	out_dir = os.path.normpath(out_dir)
+	log("Generating XML files...")
 
 	for sheet in data:
-		log("Processing sheet: {}...".format(sheet))
+		log("Processing {}...".format(sheet))
 				
 		if sheet == "project":
 			projects = to_dict(data, sheet)
