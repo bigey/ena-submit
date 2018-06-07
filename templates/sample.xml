@@ -1,0 +1,32 @@
+<SAMPLE_SET>
+  <SAMPLE alias="spo_sample_0000">
+    <TITLE>Saccharomyces cerevisiae strain MTF0000</TITLE>
+    <SAMPLE_NAME>
+      <TAXON_ID>4932</TAXON_ID>
+      <SCIENTIFIC_NAME>Saccharomyces cerevisiae</SCIENTIFIC_NAME>
+      <COMMON_NAME></COMMON_NAME>
+    </SAMPLE_NAME>
+    <SAMPLE_ATTRIBUTES>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>strain</TAG>
+        <VALUE>MTF0000</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>sample_description</TAG>
+        <VALUE>Natural diploid yeast isolated from Lunar soil</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>collected_by</TAG>
+        <VALUE>Lunar Rover 1</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>country</TAG>
+        <VALUE>Earth Moon</VALUE>
+      </SAMPLE_ATTRIBUTE>
+      <SAMPLE_ATTRIBUTE>
+        <TAG>isolation_source</TAG>
+        <VALUE>soil</VALUE>
+      </SAMPLE_ATTRIBUTE>
+    </SAMPLE_ATTRIBUTES>
+  </SAMPLE>
+</SAMPLE_SET>

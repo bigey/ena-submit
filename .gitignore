@@ -1,0 +1,17 @@
+# Blacklist all files/folders
+# /*
+
+# whitelist files
+# !.gitignore
+# !README.md
+
+# Whitelist a folder/subfolder hierarchy:
+# 1/ whitelist a folder
+# 2/ blacklist its contain
+# 3/ whitelist the subfolder...
+# !dir1/
+# dir1/*
+# !dir1/dir2/
+
+*#
+*~
