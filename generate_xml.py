@@ -1,20 +1,46 @@
 #!/usr/bin/env python3
 
-import argparse, hashlib
+import os, sys, argparse, hashlib
 from yattag import Doc, indent
 from pyexcel_ods import get_data
 
 
 def set_up_argparse():
-	parser = argparse.ArgumentParser(description = """
-	This tool will generate xml files to submit to ENA repository
-	""")
+	parser = argparse.ArgumentParser(
+		description = """
+		This tool will generate xml files to submit to ENA repository
+		""")
 	
-	# parser.add_argument()
+	parser.add_argument("--data_dir", "-d", 
+		dest = "data_dir", default = os.getcwd(),
+		help = "directory containing the data (reads, assembly, ...). Defaul: curreny dir")
+
+	parser.add_argument("--out_dir", "-o", 
+		dest = "out_dir", default = os.getcwd(),
+		help = "output directory containing the generated xml files. Defaul: curreny dir")
+
+	parser.add_argument("spreadsheet_file", metavar = "SPREADSHEET_FILE",
+		help = "spreadsheet file in libreoffice calc format (ods)")
 	
 	opts = parser.parse_args()
-	
 	return opts
+
+
+def check_file_exists(filepath, file_description):
+	"""
+	A function to check if a file exists.
+	It will print out an error message and exit if the file is not found
+	Params
+	----------
+	filepath : String
+	the path to the file to be checked
+	file_description : String
+	    a description of the file to be checked e.g "config file"
+	"""
+
+	if not os.path.exists(filepath):
+		print("The " + file_description + " (" + filepath + ") does not exist!")
+		sys.exit(1)
 
 
 def _project(projects):
@@ -194,7 +220,7 @@ def to_dict(data, sheet):
 	return(return_dict)
 
 
-def import_spreadsheet_data(file = "ena_submission_spreadsheet.ods"):
+def import_spreadsheet_data(file):
 	data = get_data(file)
 
 	for sheet in data:
@@ -221,7 +247,7 @@ def import_spreadsheet_data(file = "ena_submission_spreadsheet.ods"):
 				file.write(_run(runs))
 
 
-def md5sum(filename, blocksize=65536):
+def md5sum(filename, blocksize = 65536):
 	hash = hashlib.md5()
 	with open(filename, "rb") as f:
 		for block in iter(lambda: f.read(blocksize), b""):
@@ -230,10 +256,13 @@ def md5sum(filename, blocksize=65536):
 	return hash.hexdigest()
 
 
-def main():
-	import_spreadsheet_data()
+def main(opts):
+	check_file_exists(opts.data_dir, "data directory")
+	check_file_exists(opts.out_dir, "output directory")
+	check_file_exists(opts.spreadsheet_file, "spreadsheet file")
+	import_spreadsheet_data(opts.spreadsheet_file)
 
 
 if __name__ == "__main__":
 	opts = set_up_argparse()
-	main()
+	main(opts)
