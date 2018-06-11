@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="receipt.xsl"?>
+<RECEIPT receiptDate="2018-06-11T10:31:28.548+01:00" submissionFile="submission.xml" success="false">
+     <PROJECT alias="spo_proj_0000" status="PRIVATE" holdUntilDate="2020-06-11+01:00"/>
+     <SUBMISSION alias="SUBMISSION-11-06-2018-10:31:28:465"/>
+     <MESSAGES>
+          <ERROR>In project, alias:"spo_proj_0000", accession:"". The object being added already exists in the submission account with accession: "PRJEB27220".</ERROR>
+          <INFO>Submission has been rolled back.</INFO>
+          <INFO>This submission is a TEST submission and will be discarded within 24 hours</INFO>
+     </MESSAGES>
+     <ACTIONS>ADD</ACTIONS>
+</RECEIPT>
