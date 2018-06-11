@@ -90,42 +90,23 @@ def _sample_xml(samples):
 				with tag("SAMPLE_NAME"):
 					with tag("TAXON_ID"):
 						text(sample["TAXON_ID"])
+						sample.pop("TAXON_ID")
 					with tag("SCIENTIFIC_NAME"):
 						text(sample["SCIENTIFIC_NAME"])
+						sample.pop("SCIENTIFIC_NAME")
 					with tag("COMMON_NAME"):
 						text(sample["COMMON_NAME"])
+						sample.pop("COMMON_NAME")
 
 				with tag("SAMPLE_ATTRIBUTES"):
 
-					with tag("SAMPLE_ATTRIBUTE"):
-						with tag("TAG"):
-							text("strain")
-						with tag("VALUE"):
-							text(sample["strain"])
+					for key in sample:
 
-					with tag("SAMPLE_ATTRIBUTE"):
-						with tag("TAG"):
-							text("sample_description")
-						with tag("VALUE"):
-							text(sample["sample_description"])
-
-					with tag("SAMPLE_ATTRIBUTE"):
-						with tag("TAG"):
-							text("collected_by")
-						with tag("VALUE"):
-							text(sample["collected_by"])
-
-					with tag("SAMPLE_ATTRIBUTE"):
-						with tag("TAG"):
-							text("country")
-						with tag("VALUE"):
-							text(sample["country"])
-
-					with tag("SAMPLE_ATTRIBUTE"):
-						with tag("TAG"):
-							text("isolation_source")
-						with tag("VALUE"):
-							text(sample["isolation_source"])
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text(key)
+							with tag("VALUE"):
+								text(sample[key])
 
 	result = indent(doc.getvalue())
 	return(result)
@@ -175,13 +156,6 @@ def _experiment_xml(experiments):
 						with tag("INSTRUMENT_MODEL"):
 							text(experiment["INSTRUMENT_MODEL"])
 
-				# with tag("EXPERIMENT_ATTRIBUTES"):
-				# 	with tag("EXPERIMENT_ATTRIBUTE"):
-				# 		with tag("TAG"):
-				# 			text("library_preparation_date")
-				# 		with tag("VALUE"):
-				# 			text(experiment["library_preparation_date"])
-
 	result = indent(doc.getvalue())
 	return(result)
 
@@ -224,8 +198,9 @@ def _submission_xml():
 	with tag("SUBMISSION"):
 		with tag("ACTIONS"):
 			with tag("ACTION"):
-				doc.stag("ADD")
-
+				# doc.stag("ADD")
+				doc.stag("MODIFY")
+	
 	result = indent(doc.getvalue())
 	return(result)
 

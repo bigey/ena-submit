@@ -18,21 +18,20 @@ curl --url $FTP \
 	-T "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" \
 
 
-# # Generate XML submission files
+# Generate XML submission files
 echo
 echo "Generate XML submission files..."
 ./generate_xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $LIBREOFFICE_ODS
-
-
-# ENA submit 
-echo
-echo "Submit XML to ENA server..."
-
 submit=$XML_OUT_DIR/submission.xml
 project=$XML_OUT_DIR/project.xml
 sample=$XML_OUT_DIR/sample.xml
 experiment=$XML_OUT_DIR/experiment.xml
 run=$XML_OUT_DIR/run.xml
+
+
+# ENA submit 
+echo
+echo "Submit XML to ENA server..."
 
 curl -u $user:$pass \
   -F "SUBMISSION=@${submit}" \
@@ -43,16 +42,16 @@ curl -u $user:$pass \
   ${URL} > server-receipt.xml
 
 if grep "RECEIPT" server-receipt.xml &> /dev/null; then
-  echo "Server connection was ok"
+  echo "Server connection was ok."
   success=$(perl -ne 'm/success="(true|false)"/ && print $1' server-receipt.xml)
   
   if [ $success = "true" ]
   then
-    echo "Submission was successful"
-    echo "See server receipt XML returned: server-receipt.xml"
+    echo "Submission was successful."
+    echo "See server receipt XML returned: server-receipt.xml."
   else
     echo "Submission was not successful!"
-    echo "See server receipt XML returned: server-receipt.xml"
+    echo "See server receipt XML returned: server-receipt.xml."
     echo "Check the receipt for error messages and after making corrections, "
     echo "  try the submission again."
     exit 2
@@ -60,7 +59,7 @@ if grep "RECEIPT" server-receipt.xml &> /dev/null; then
 
 else
   echo "Server connection error!"
-  echo "See server receipt file: server-receipt.xml"
+  echo "See server receipt file: server-receipt.xml."
   exit 1
 fi
 
