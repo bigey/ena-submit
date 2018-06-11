@@ -15,7 +15,7 @@ echo "Upload data to ENA FTP server..."
 read user pass < $CREDENDIAL
 curl --url $FTP \
 	--user $user:$pass \
-	-T "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" \
+	-T "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}"
 
 
 # Generate XML submission files

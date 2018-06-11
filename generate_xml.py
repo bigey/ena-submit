@@ -192,14 +192,15 @@ def _run_xml(runs, data_dir):
 	return(result)
 
 
-def _submission_xml():
+def _submission_xml(submission):
 	doc, tag, text = Doc().tagtext()
 
 	with tag("SUBMISSION"):
 		with tag("ACTIONS"):
-			with tag("ACTION"):
-				# doc.stag("ADD")
-				doc.stag("MODIFY")
+			for action in submission:
+				if action == "ACTION" and submission["ACTION"] != "":
+					with tag("ACTION"):
+						doc.stag(submission[action])
 	
 	result = indent(doc.getvalue())
 	return(result)
@@ -227,7 +228,7 @@ def generate_xml_files(data, data_dir, out_dir):
 
 	for sheet in data:
 		log("Processing {}...".format(sheet))
-				
+
 		if sheet == "project":
 			projects = to_dict(data, sheet)
 			with open(out_dir+"/project.xml", "w") as file:
@@ -248,8 +249,11 @@ def generate_xml_files(data, data_dir, out_dir):
 			with open(out_dir+"/run.xml", "w") as file:
 				file.write(_run_xml(runs, data_dir))
 
-	with open(out_dir+"/submission.xml", "w") as file:
-				file.write(_submission_xml())
+		if sheet == "submission": 
+			submission = dict( zip(data[sheet][0], data[sheet][1]) )
+			print(submission)
+			with open(out_dir+"/submission.xml", "w") as file:
+				file.write(_submission_xml(submission))
 
 
 def md5sum(filename, blocksize = 65536):
