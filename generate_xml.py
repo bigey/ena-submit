@@ -36,10 +36,8 @@ def check_file_exists(filepath, file_description):
 	It will print out an error message and exit if the file is not found
 	Params
 	----------
-	filepath : String
-	the path to the file to be checked
-	file_description : String
-	    a description of the file to be checked e.g "config file"
+	filepath : String, the path to the file to be checked
+	file_description : String, description of the file to be checked
 	"""
 
 	if not os.path.exists(filepath):
@@ -192,20 +190,6 @@ def _run_xml(runs, data_dir):
 	return(result)
 
 
-def _submission_xml(submission):
-	doc, tag, text = Doc().tagtext()
-
-	with tag("SUBMISSION"):
-		with tag("ACTIONS"):
-			for action in submission:
-				if action == "ACTION" and submission["ACTION"] != "":
-					with tag("ACTION"):
-						doc.stag(submission[action])
-	
-	result = indent(doc.getvalue())
-	return(result)
-
-
 def to_dict(data, sheet):
 	return_dict = {}
 	keys = data[sheet].pop(0)
@@ -227,7 +211,7 @@ def generate_xml_files(data, data_dir, out_dir):
 	log("Generating XML files...")
 
 	for sheet in data:
-		log("Processing {}...".format(sheet))
+		log("  Processing {}...".format(sheet))
 
 		if sheet == "project":
 			projects = to_dict(data, sheet)
@@ -248,12 +232,6 @@ def generate_xml_files(data, data_dir, out_dir):
 			runs = to_dict(data, sheet)
 			with open(out_dir+"/run.xml", "w") as file:
 				file.write(_run_xml(runs, data_dir))
-
-		if sheet == "submission": 
-			submission = dict( zip(data[sheet][0], data[sheet][1]) )
-			print(submission)
-			with open(out_dir+"/submission.xml", "w") as file:
-				file.write(_submission_xml(submission))
 
 
 def md5sum(filename, blocksize = 65536):

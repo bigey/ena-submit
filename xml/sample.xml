@@ -8,7 +8,7 @@
     </SAMPLE_NAME>
     <SAMPLE_ATTRIBUTES>
       <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location (region and locality)</TAG>
+        <TAG>geographic location (country and/or sea)</TAG>
         <VALUE>not provided</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
@@ -16,20 +16,20 @@
         <VALUE>Saccharomyces cerevisiae strain MTF0000</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>sample_description</TAG>
-        <VALUE>Natural diploid yeast isolated from Lunar soil</VALUE>
+        <TAG>geographic location (region and locality)</TAG>
+        <VALUE>not provided</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
         <TAG>strain</TAG>
         <VALUE>MTF0000</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>collected_by</TAG>
-        <VALUE>Lunar Rover 1</VALUE>
+        <TAG>sample_description</TAG>
+        <VALUE>Natural diploid yeast isolated from Lunar soil</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location (country and/or sea)</TAG>
-        <VALUE>not provided</VALUE>
+        <TAG>collected_by</TAG>
+        <VALUE>Lunar Rover 1</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
         <TAG>alias</TAG>
