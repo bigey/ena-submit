@@ -13,11 +13,11 @@ def set_up_argparse():
 	
 	parser.add_argument("--data_dir", "-d", 
 		dest = "data_dir", default = os.getcwd(),
-		help = "directory containing the data (reads, assembly, ...). Defaul: curreny dir")
+		help = "directory containing the data (reads, assembly, ...). Default: current dir")
 
 	parser.add_argument("--out_dir", "-o", 
 		dest = "out_dir", default = os.getcwd(), 
-		help = "output directory containing the generated xml files. Defaul: curreny dir")
+		help = "output directory containing the generated xml files. Default: current dir")
 
 	parser.add_argument("spreadsheet_file", metavar = "SPREADSHEET_FILE", 
 		help = "spreadsheet file in libreoffice calc format (ods)")
