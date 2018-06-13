@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="receipt.xsl"?>
-<RECEIPT receiptDate="2018-06-12T16:37:15.283+01:00" submissionFile="submission-INRA_1528817835283.xml" success="true">
-     <EXPERIMENT accession="ERX2642194" alias="spo_exp_0000" status="PRIVATE"/>
-     <RUN accession="ERR2625637" alias="spo_run_0000" status="PRIVATE"/>
-     <SAMPLE accession="ERS2543507" alias="spo_sample_0000" status="PRIVATE">
-          <EXT_ID accession="SAMEA4723368" type="biosample"/>
+<RECEIPT receiptDate="2018-06-13T13:12:42.992+01:00" submissionFile="submission-INRA_1528891962992.xml" success="true">
+     <EXPERIMENT accession="ERX2649307" alias="experiment_0001" status="PRIVATE"/>
+     <EXPERIMENT accession="ERX2649308" alias="experiment_0000" status="PRIVATE"/>
+     <RUN accession="ERR2632808" alias="runA_0000" status="PRIVATE"/>
+     <RUN accession="ERR2632809" alias="runA_0001" status="PRIVATE"/>
+     <SAMPLE accession="ERS2546373" alias="sam_0001" status="PRIVATE">
+          <EXT_ID accession="SAMEA4726238" type="biosample"/>
      </SAMPLE>
-     <PROJECT accession="PRJEB27361" alias="spo_proj_0000" status="PRIVATE" holdUntilDate="2020-06-12+01:00"/>
-     <SUBMISSION accession="" alias="SUBMISSION-12-06-2018-16:37:15:042"/>
+     <SAMPLE accession="ERS2546374" alias="sam_0000" status="PRIVATE">
+          <EXT_ID accession="SAMEA4726239" type="biosample"/>
+     </SAMPLE>
+     <PROJECT accession="PRJEB27294" alias="project_0000" status="PRIVATE" holdUntilDate="2020-06-13+01:00">
+          <EXT_ID accession="ERP109356" type="study"/>
+     </PROJECT>
+     <SUBMISSION accession="ERA1517677" alias="SUBMISSION-13-06-2018-13:12:42:091"/>
      <MESSAGES>
-          <INFO>The XML md5 checksum for the object being updated has not changed. No update required for ERP109421.</INFO>
-          <INFO>The XML md5 checksum for the object being updated has not changed. No update required for PRJEB27361.</INFO>
-          <INFO>The XML md5 checksum for the object being updated has not changed. No update required for ERX2642194.</INFO>
-          <INFO>The XML md5 checksum for the object being updated has not changed. No update required for ERR2625637.</INFO>
           <INFO>Submission has been committed.</INFO>
           <INFO>This submission is a TEST submission and will be discarded within 24 hours</INFO>
      </MESSAGES>
-     <ACTIONS>MODIFY</ACTIONS>
+     <ACTIONS>ADD</ACTIONS>
 </RECEIPT>

@@ -79,7 +79,8 @@ def _sample_xml(samples):
 
 		for sample_alias in samples:
 			sample = samples[sample_alias]
-
+			sample.pop("alias", None)
+			
 			with tag("SAMPLE", alias = sample_alias):
 
 				with tag("TITLE"):
@@ -198,6 +199,7 @@ def to_dict(data, sheet):
 		row_dict = dict(zip(keys, row))
 		return_dict[ row_dict["alias"] ] = row_dict
 	
+	# print(return_dict)
 	return(return_dict)
 
 
