@@ -8,7 +8,7 @@ from pyexcel_ods import get_data
 def set_up_argparse():
 	parser = argparse.ArgumentParser(
 		description = """
-		This tool will generate xml files to submit to ENA repository
+		Generate xml files to submit to ENA submission server
 		""")
 	
 	parser.add_argument("--data_dir", "-d", 

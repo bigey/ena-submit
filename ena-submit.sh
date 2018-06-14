@@ -4,7 +4,7 @@ set -e
 CREDENDIAL=.credential
 FTP="ftp://webin.ebi.ac.uk/"
 URL="https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/"
-LIBREOFFICE_ODS="ena_submission_spreadsheet.ods"
+LIBREOFFICE_ODS="submission_spreadsheet_template.ods"
 DATA_IN_DIR="data"
 XML_OUT_DIR="xml"
 ACTION="ADD"
@@ -13,6 +13,7 @@ ACTION="ADD"
 # Upload files to ENA (ftp)
 echo
 echo "# Upload data to ENA FTP server..."
+echo
 read user pass < $CREDENDIAL
 curl --user $user:$pass \
 	-T "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" \
@@ -22,7 +23,8 @@ curl --user $user:$pass \
 # Generate XML submission files
 echo
 echo "# Generate XML submission files..."
-./generate_xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $LIBREOFFICE_ODS
+echo
+./generate-xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $LIBREOFFICE_ODS
 
 project=$XML_OUT_DIR/project.xml
 sample=$XML_OUT_DIR/sample.xml
@@ -33,7 +35,7 @@ run=$XML_OUT_DIR/run.xml
 # ENA submit 
 echo
 echo "# Submit XML files to ENA server..."
-
+echo
 curl -u $user:$pass \
   -F "ACTION=${ACTION}" \
   -F "PROJECT=@${project}" \
@@ -51,8 +53,11 @@ if grep "RECEIPT" server-receipt.xml &> /dev/null; then
   if [ $success = "true" ]
   then
     echo "Submission was successful."
-    echo "See server receipt XML returned: server-receipt.xml."
-    echo
+    echo "See the server receipts returned: "
+    echo "   - server-receipt.xml (original receipt)"
+    echo "   - server-receipt.txt (tabular format)" 
+    ./parse-receipt.py -t -o server-receipt.txt server-receipt.xml
+
   else
     echo "Submission was not successful!"
     echo "See server receipt XML returned: server-receipt.xml."

@@ -1,8 +1,6 @@
 # A python script to generate XML files used to submit data to the European Nucleotide Archive (ENA) server
 
-Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files.
-
-Informations used to generate XML are extracted from a more convenient LibreOffice spreadsheet (ODS) template (`ena_submission_spreadsheet.ods`).
+Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files. Informations used to generate XML are extracted from a more convenient LibreOffice spreadsheet (ODS) template (`submission_spreadsheet_template.ods`).
 
 We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.io/en/latest/index.html).
 
@@ -10,18 +8,24 @@ We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.
 
 ### Requirements
 
-* `cURL`
+* cURL:
+
+install:
 
 ~~~sh
 sudo apt-get install curl
 ~~~
 
-* python3
+* python3:
+
   * hashlib
   * yattag
+  * untangle
   * pyexcel_ods
 
-~~~sh
+install:
+
+~~~bash
 pip3 install -r requirements.txt
 ~~~
 
@@ -29,16 +33,18 @@ pip3 install -r requirements.txt
 
 The easiest option is to clone the repository:
 
-~~~sh
+~~~bash
 git clone https://github.com/bigey/ena-submit.git
 ~~~
 
 ## Usage
 
+To generate XML files use:
+
 ~~~
 generate_xml.py [-h] [--data_dir DATA_DIR] [--out_dir OUT_DIR] SPREADSHEET_FILE
 
-This tool will generate xml files to submit to ENA repository
+Generate xml files to submit to ENA server
 
 positional arguments:
 
@@ -55,8 +61,29 @@ optional arguments:
 
   --out_dir OUT_DIR, -o OUT_DIR
                         output directory containing the generated xml files
-
                         Default: current dir
+~~~
+
+To parse the XML reicept of the submission server:
+
+~~~
+parse-receipt.py [-h] [--tsv] [--out OUT_FILE] RECEIPT_XML
+
+Parse the XML data received from the submission server
+
+positional arguments:
+
+  RECEIPT_XML           receipt xml file from ENA server
+
+optional arguments:
+
+  -h, --help            show this help message and exit
+
+  --tsv, -t             output in tabular format (space separated value)
+
+  --out OUT_FILE, -o OUT_FILE
+                        optional output file
+                        Default: stdout
 ~~~
 
 ## Description
@@ -77,8 +104,8 @@ Use one line per sample. ENA provides sample checklists which define all the man
 
 Mandatory
 
-* alias: a unique code, *eg*: S288C_bis
-* TITLE: sample name *eg*: S288C
+* alias: a unique code, *eg*: sam_0000
+* TITLE: sample name *eg*: Saccharomyces cerevisiae S288C
 * TAXON_ID: *eg*: 4932
 * SCIENTIFIC_NAME: *eg*: Saccharomyces cerevisiae
 * COMMON_NAME: *eg*: baker's yeast (optional)
@@ -158,21 +185,21 @@ If ok, then submit to:
 
 #### LibreOffice spreadsheet
 
-`LIBREOFFICE_ODS="ena_submission_spreadsheet.ods"`
+`LIBREOFFICE_ODS="submission_spreadsheet_template.ods"`
 
-#### Directory containing data/reads
+#### Directory to contain data/reads
 
-This directory should contain the data / reads
+This directory should contain the data (*.fastq.gz) files.
 
 `DATA_IN_DIR="data"`
 
-#### Update to point to the directory containing the XML files
+#### Directory to contain the XML files
 
-Change this directory if you want the XML to be generated in another directory.
+Update if you want the XML to be generated in another directory.
 
 `XML_OUT_DIR="xml"`
 
 #### Select the appropriate action
 
 * `ACTION="ADD"` is used to submit new data
-* `ACTION="MODIFY"` is used to update the data after modifications
+* `ACTION="MODIFY"` is used to update the data after modifications in the spreadsheet

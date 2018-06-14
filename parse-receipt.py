@@ -8,7 +8,7 @@ import untangle
 def set_up_argparse():
 	parser = argparse.ArgumentParser(
 		description = """
-		Todo: description
+		Parse the XML data received from the submission server
 		""")
 	
 	parser.add_argument("--tsv", "-t", 
@@ -17,7 +17,7 @@ def set_up_argparse():
 
 	parser.add_argument("--out", "-o", 
 		dest = "out_file", default = sys.stdout,
-		help = "output file. Default: stdout")
+		help = "optional output file. Default: stdout")
 
 	parser.add_argument("xml_file", metavar = "RECEIPT_XML", 
 		help = "receipt xml file from ENA server")

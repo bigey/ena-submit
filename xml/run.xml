@@ -3,8 +3,8 @@
     <EXPERIMENT_REF refname="exp_0001" />
     <DATA_BLOCK>
       <FILES>
-        <FILE filename="read_0001_R1.fastq.gz" filetype="fastq" checksum_method="MD5" checksum="825d3a97901b46fa1310a76d99df889f" />
-        <FILE filename="read_0001_R2.fastq.gz" filetype="fastq" checksum_method="MD5" checksum="66e56f31e237320016731bf7ec6bf181" />
+        <FILE checksum_method="MD5" filename="read_0001_R1.fastq.gz" filetype="fastq" checksum="825d3a97901b46fa1310a76d99df889f" />
+        <FILE checksum_method="MD5" filename="read_0001_R2.fastq.gz" filetype="fastq" checksum="66e56f31e237320016731bf7ec6bf181" />
       </FILES>
     </DATA_BLOCK>
   </RUN>
@@ -12,8 +12,8 @@
     <EXPERIMENT_REF refname="exp_0000" />
     <DATA_BLOCK>
       <FILES>
-        <FILE filename="read_0000_R1.fastq.gz" filetype="fastq" checksum_method="MD5" checksum="8536e51fb048b0bef15dc3a818ff17ae" />
-        <FILE filename="read_0000_R2.fastq.gz" filetype="fastq" checksum_method="MD5" checksum="7ad8893c33743033013867beb81cc7e4" />
+        <FILE checksum_method="MD5" filename="read_0000_R1.fastq.gz" filetype="fastq" checksum="8536e51fb048b0bef15dc3a818ff17ae" />
+        <FILE checksum_method="MD5" filename="read_0000_R2.fastq.gz" filetype="fastq" checksum="7ad8893c33743033013867beb81cc7e4" />
       </FILES>
     </DATA_BLOCK>
   </RUN>

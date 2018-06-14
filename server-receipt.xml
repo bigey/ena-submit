@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="receipt.xsl"?>
-<RECEIPT receiptDate="2018-06-13T13:12:42.992+01:00" submissionFile="submission-INRA_1528891962992.xml" success="true">
-     <EXPERIMENT accession="ERX2649307" alias="experiment_0001" status="PRIVATE"/>
-     <EXPERIMENT accession="ERX2649308" alias="experiment_0000" status="PRIVATE"/>
-     <RUN accession="ERR2632808" alias="runA_0000" status="PRIVATE"/>
-     <RUN accession="ERR2632809" alias="runA_0001" status="PRIVATE"/>
-     <SAMPLE accession="ERS2546373" alias="sam_0001" status="PRIVATE">
-          <EXT_ID accession="SAMEA4726238" type="biosample"/>
+<RECEIPT receiptDate="2018-06-14T11:32:54.793+01:00" submissionFile="submission-INRA_1528972374793.xml" success="true">
+     <EXPERIMENT accession="ERX2655969" alias="exp_0000" status="PRIVATE"/>
+     <EXPERIMENT accession="ERX2655970" alias="exp_0001" status="PRIVATE"/>
+     <RUN accession="ERR2639415" alias="run_0001" status="PRIVATE"/>
+     <RUN accession="ERR2639416" alias="run_0000" status="PRIVATE"/>
+     <SAMPLE accession="ERS2548971" alias="sam_0001" status="PRIVATE">
+          <EXT_ID accession="SAMEA4728839" type="biosample"/>
      </SAMPLE>
-     <SAMPLE accession="ERS2546374" alias="sam_0000" status="PRIVATE">
-          <EXT_ID accession="SAMEA4726239" type="biosample"/>
+     <SAMPLE accession="ERS2548972" alias="sam_0000" status="PRIVATE">
+          <EXT_ID accession="SAMEA4728840" type="biosample"/>
      </SAMPLE>
-     <PROJECT accession="PRJEB27294" alias="project_0000" status="PRIVATE" holdUntilDate="2020-06-13+01:00">
-          <EXT_ID accession="ERP109356" type="study"/>
+     <PROJECT accession="PRJEB27553" alias="proj_0000" status="PRIVATE" holdUntilDate="2020-06-14+01:00">
+          <EXT_ID accession="ERP109617" type="study"/>
      </PROJECT>
-     <SUBMISSION accession="ERA1517677" alias="SUBMISSION-13-06-2018-13:12:42:091"/>
+     <SUBMISSION accession="ERA1517907" alias="SUBMISSION-14-06-2018-11:32:53:799"/>
      <MESSAGES>
           <INFO>Submission has been committed.</INFO>
           <INFO>This submission is a TEST submission and will be discarded within 24 hours</INFO>
