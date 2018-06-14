@@ -4,7 +4,7 @@ set -e
 CREDENDIAL=.credential
 FTP="ftp://webin.ebi.ac.uk/"
 URL="https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/"
-LIBREOFFICE_ODS="new_ena_submission_spreadsheet.ods"
+LIBREOFFICE_ODS="ena_submission_spreadsheet.ods"
 DATA_IN_DIR="data"
 XML_OUT_DIR="xml"
 ACTION="ADD"

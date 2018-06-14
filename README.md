@@ -4,6 +4,8 @@ Submissions to ENA can be made using programmatic submission service using `cURL
 
 Informations used to generate XML are extracted from a more convenient LibreOffice spreadsheet (ODS) template (`ena_submission_spreadsheet.ods`).
 
+We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.io/en/latest/index.html).
+
 ## Install
 
 ### Requirements
@@ -115,14 +117,62 @@ The run points to the experiment using the experiment’s alias.
 
 * alias: a unique code, *eg*: run_0000
 * EXPERIMENT_REF: code of the experiment, *eg*: exp_0000
-* filetype: fastq
-* filename_r1
-* filename_r2
+* filetype: *eg*: fastq
+* filename_r1: path to read file 1
+* filename_r2: path to read file 2 (optional if single)
 
-## TODO
+## Using the script `ena-submit.sh`
 
-Adapt the shell script `ena-submit.sh` to:
+### Utility
 
-* upload the run (reads) files to the ftp server
-* generate XML file (using `generate_xml.py`)
-* submit the XML files to ENA submission server
+This script can be used to:
+
+1) upload the run (reads) files to the ftp server (using `curl`),
+2) generate XML file (using `generate_xml.py`)
+3) submit the XML files to ENA server (using `curl`)
+
+### Customization
+
+#### ENA credentials
+
+If you have not submitted to Webin before please register a submission account.
+
+Create a file containing the credentials used to connect to the ENA
+server: one line with `user` and `password` separated by a space character:
+
+`user password`
+
+Update this line accordingly:
+
+`CREDENDIAL=".credential"`
+
+#### Server URL
+
+For testing, use the testing server:
+
+`URL="https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/"`
+
+If ok, then submit to:
+
+`URL="https://www.ebi.ac.uk/ena/submit/drop-box/submit/"`
+
+#### LibreOffice spreadsheet
+
+`LIBREOFFICE_ODS="ena_submission_spreadsheet.ods"`
+
+#### Directory containing data/reads
+
+This directory should contain the data / reads
+
+`DATA_IN_DIR="data"`
+
+#### Update to point to the directory containing the XML files
+
+Change this directory if you want the XML to be generated in another directory.
+
+`XML_OUT_DIR="xml"`
+
+#### Select the appropriate action
+
+* `ACTION="ADD"` is used to submit new data
+* `ACTION="MODIFY"` is used to update the data after modifications
