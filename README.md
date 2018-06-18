@@ -12,9 +12,9 @@ We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.
 
 install:
 
-~~~sh
+```sh
 sudo apt-get install curl
-~~~
+```
 
 * python3:
 
@@ -25,23 +25,23 @@ sudo apt-get install curl
 
 install:
 
-~~~bash
+```sh
 pip3 install -r requirements.txt
-~~~
+```
 
 ### Installation
 
 The easiest option is to clone the repository:
 
-~~~bash
+```sh
 git clone https://github.com/bigey/ena-submit.git
-~~~
+```
 
 ## Usage
 
 To generate XML files use:
 
-~~~
+```{}
 generate_xml.py [-h] [--data_dir DATA_DIR] [--out_dir OUT_DIR] SPREADSHEET_FILE
 
 Generate xml files to submit to ENA server
@@ -62,11 +62,11 @@ optional arguments:
   --out_dir OUT_DIR, -o OUT_DIR
                         output directory containing the generated xml files
                         Default: current dir
-~~~
+```
 
 To parse the XML reicept of the submission server:
 
-~~~
+```{}
 parse-receipt.py [-h] [--tsv] [--out OUT_FILE] RECEIPT_XML
 
 Parse the XML data received from the submission server
@@ -84,7 +84,7 @@ optional arguments:
   --out OUT_FILE, -o OUT_FILE
                         optional output file
                         Default: stdout
-~~~
+```
 
 ## Description
 
