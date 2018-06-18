@@ -1,6 +1,7 @@
-# A python script to generate XML files used to submit data to the European Nucleotide Archive (ENA) server
+# Scripts to generate XML files and to submit them to the European Nucleotide Archive (ENA) server
 
-Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files. Informations used to generate XML are extracted from a more convenient LibreOffice spreadsheet (ODS) template (`submission_spreadsheet_template.ods`).
+Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files. Informations used to generate XML are extracted from a more convenient LibreOffice spreadsheet (ODS) template (`spreadsheet_template.ods`). The XML receipt is further parsed using `parse-receipt.py` to
+extract accession numbers assigned by the service.
 
 We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.io/en/latest/index.html).
 
@@ -33,7 +34,7 @@ pip3 install -r requirements.txt
 
 The easiest option is to clone the repository:
 
-```sh
+```{}
 git clone https://github.com/bigey/ena-submit.git
 ```
 
@@ -64,7 +65,7 @@ optional arguments:
                         Default: current dir
 ```
 
-### Parse the XML reicept of the submission server
+### Parse the XML receipt of the server
 
 ```{}
 parse-receipt.py [-h] [--tsv] [--out OUT_FILE] RECEIPT_XML
@@ -88,7 +89,7 @@ optional arguments:
 
 ## Description
 
-Use LibreOffice/OpenOffice to edit the submission informations in the spreadsheet template file. Use one sheat for each type of data:
+Use LibreOffice/OpenOffice to edit the submission informations in the spreadsheet template file (`spreadsheet_template.ods`). Use one sheat for each type of data:
 
 ### Project
 
@@ -100,7 +101,7 @@ A project (also referred to as a study) is used to group other objects together,
 
 ### Sample
 
-Use one line per sample. ENA provides sample checklists which define all the mandatory and recommended attributes for specific types of samples. We do not define a checklist then the samples will be validated against the ENA default checklist [ERC000011](https://www.ebi.ac.uk/ena/data/view/ERC000011). This checklist has virtually no mandatory fields but contains many optional attributes that can help you to annotate your samples to the highest possible standard. You can find all the sample checklists [here](http://www.ebi.ac.uk/ena/submit/checklists).
+Use one line per sample. ENA provides sample checklists which define all the mandatory and recommended attributes for specific types of samples. We do not define a checklist here, then the samples will be validated against the ENA default checklist [ERC000011](https://www.ebi.ac.uk/ena/data/view/ERC000011). This checklist has virtually no mandatory fields but contains many optional attributes that can help you to annotate your samples to the highest possible standard. You can find all the checklists [here](http://www.ebi.ac.uk/ena/submit/checklists).
 
 Mandatory
 
@@ -154,15 +155,30 @@ The run points to the experiment using the experiment’s alias.
 
 This script can be used to:
 
-1) upload the run (reads) files to the ftp server (using `curl`),
-2) generate XML file (using `generate_xml.py`)
-3) submit the XML files to ENA server (using `curl`)
+1. upload run files (reads) to the ftp server (using `curl`),
+2. generate XML files (using `generate_xml.py`),
+3. submit the XML files to server (using `curl`),
+4. parse the XML receipt (using `parse-receipt.py`)
 
 ### Customization
 
+Please give  the following parameters:
+
+#### Type of submission
+
+Select:
+
+* `TEST="true"` for testing. You'll use the testing server. We encourage you to first validate your data using this server,
+* `TEST="false"` to submit your data. You'll use the production server. This is a **real** submission!
+
+#### Select the appropriate action
+
+* `ACTION="ADD"` is used to submit new data,
+* `ACTION="MODIFY"` is used to update submited data
+
 #### ENA credentials
 
-If you have not submitted to Webin before please register a submission account.
+If you have not submitted to Webin before, please register a submission account [here](https://www.ebi.ac.uk/ena/submit/sra/#home).
 
 Create a file containing the credentials used to connect to the ENA
 server: one line with `user` and `password` separated by a space character:
@@ -173,33 +189,20 @@ Update this line accordingly:
 
 `CREDENDIAL=".credential"`
 
-#### Server URL
-
-For testing, use the testing server:
-
-`URL="https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/"`
-
-If ok, then submit to:
-
-`URL="https://www.ebi.ac.uk/ena/submit/drop-box/submit/"`
-
 #### LibreOffice spreadsheet
 
-`LIBREOFFICE_ODS="submission_spreadsheet_template.ods"`
+The name of the spreadsheet file containing your data. You would start using the template spreadsheet given with the project.
 
-#### Directory to contain data/reads
+`LIBREOFFICE_ODS="spreadsheet_template.ods"`
 
-This directory should contain the data (*.fastq.gz) files.
+#### Directory containing data/reads
+
+This directory should contain the sequencing read files. Generally `*.fastq.gz` files.
 
 `DATA_IN_DIR="data"`
 
-#### Directory to contain the XML files
+#### Directory containing the generated XML files
 
-Update if you want the XML to be generated in another directory.
+Update if you want the XMLs to be generated in another directory.
 
 `XML_OUT_DIR="xml"`
-
-#### Select the appropriate action
-
-* `ACTION="ADD"` is used to submit new data
-* `ACTION="MODIFY"` is used to update the data after modifications in the spreadsheet
