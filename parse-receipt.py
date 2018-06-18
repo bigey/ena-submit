@@ -35,7 +35,8 @@ def extract(element, store = { "SUBMISSION": [], "PROJECT": [], "SAMPLE": [],
             store[child._name].append([child["alias"], child["accession"]])
         
         if child._name in ["PROJECT", "SAMPLE"]:
-            store[child._name].append([child["alias"], child["accession"], child.EXT_ID["accession"]])
+            store[child._name].append([child["alias"], child["accession"], 
+				child.EXT_ID["accession"]])
 
     return store
 
@@ -69,7 +70,7 @@ def main(opts):
 	if opts.out_file == sys.stdout:
 		output(data, tabular = opts.is_tabular)
 	else:
-		with open(opts.out_file, "a") as fh:
+		with open(opts.out_file, "w") as fh:
 			output(data, tabular = opts.is_tabular, fh = fh)
 
 
