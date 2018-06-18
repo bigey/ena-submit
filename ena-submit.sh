@@ -1,26 +1,77 @@
 #!/bin/bash
-set -e 
+set -e
 
-CREDENDIAL=.credential
-FTP="ftp://webin.ebi.ac.uk/"
-URL="https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/"
-LIBREOFFICE_ODS="submission_spreadsheet_template.ods"
-DATA_IN_DIR="data"
-XML_OUT_DIR="xml"
+#------------------------------------------------------------------------------#
+#                     Thank you to adapt information below                     #
+#------------------------------------------------------------------------------#
+
+# TEST/SUBMIT YOUR DATA
+# One of the following:
+# "true": submit to testing server, 
+# "false": real data submission
+TEST="true"
+
+# EXPECTED ACTION
+# One of the following actions:
+# "ADD": submit new data,
+# "MODIFY": submit updates data
 ACTION="ADD"
 
+# CREDENTIAL FILE
+# File containing the credentials. 
+# One line containing: 
+# username password
+CREDENDIAL=.credential
 
-# Upload files to ENA (ftp)
+# SPREADSHEET FILE
+# Name of the spreadsheet file containing your data.
+# Start using the giving template
+LIBREOFFICE_ODS="spreadsheet_template.ods"
+
+# DIRECTORY CONTAINING THE DATA READS
+# The name of the directory where sequencing reads are stored
+# Generally fastq.gz files
+DATA_IN_DIR="data"
+
+# DIRECTORY CONTAINING THE GENERATED XLM FILES
+# This directrory will be used to store the xml files produced 
+XML_OUT_DIR="xml"
+
+
+#------------------------------------------------------------------------------#
+#                You should not have to modify the code below                  #
+#------------------------------------------------------------------------------#
+
+# ENA SERVERS
+FTP="ftp://webin.ebi.ac.uk/"
+URL_TEST="https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/"
+URL_PROD="https://www.ebi.ac.uk/ena/submit/drop-box/submit/"
+
+echo
+
+# SELECT SERVER
+if [ $TEST = "false" ]
+then
+  URL=$URL_PROD
+  echo "This is a real submission..."
+else
+  URL=$URL_TEST
+  echo "This a test submission..."
+fi
+
+# IMPORT CREDENTIALS
+read user pass < $CREDENDIAL
+
+
+# UPLOAD FILES TO ENA (FTP)
 echo
 echo "# Upload data to ENA FTP server..."
 echo
-read user pass < $CREDENDIAL
 curl --user $user:$pass \
 	-T "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" \
   --url $FTP
 
-
-# Generate XML submission files
+# GENERATE XML FILES
 echo
 echo "# Generate XML submission files..."
 echo
@@ -31,8 +82,7 @@ sample=$XML_OUT_DIR/sample.xml
 experiment=$XML_OUT_DIR/experiment.xml
 run=$XML_OUT_DIR/run.xml
 
-
-# ENA submit 
+# ENA SUBMISSION 
 echo
 echo "# Submit XML files to ENA server..."
 echo
@@ -53,10 +103,13 @@ if grep "RECEIPT" server-receipt.xml &> /dev/null; then
   if [ $success = "true" ]
   then
     echo "Submission was successful."
+
+    # PARSE RECEIPT XML RESPONSE
+    ./parse-receipt.py -t -o server-receipt.txt server-receipt.xml
+
     echo "See the server receipts returned: "
     echo "   - server-receipt.xml (original receipt)"
     echo "   - server-receipt.txt (tabular format)" 
-    ./parse-receipt.py -t -o server-receipt.txt server-receipt.xml
 
   else
     echo "Submission was not successful!"
@@ -74,6 +127,6 @@ else
   exit 1
 fi
 
-# End
+# END
 echo
 echo "Done."
