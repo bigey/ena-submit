@@ -4,7 +4,7 @@ Submissions to ENA can be made using programmatic submission service using `cURL
 
 We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.io/en/latest/index.html).
 
-## Install
+## Installation
 
 ### Requirements
 
@@ -29,7 +29,7 @@ install:
 pip3 install -r requirements.txt
 ```
 
-### Installation
+### Clone the project
 
 The easiest option is to clone the repository:
 
@@ -39,7 +39,7 @@ git clone https://github.com/bigey/ena-submit.git
 
 ## Usage
 
-To generate XML files use:
+### Generate XML files
 
 ```{}
 generate_xml.py [-h] [--data_dir DATA_DIR] [--out_dir OUT_DIR] SPREADSHEET_FILE
@@ -64,7 +64,7 @@ optional arguments:
                         Default: current dir
 ```
 
-To parse the XML reicept of the submission server:
+### Parse the XML reicept of the submission server
 
 ```{}
 parse-receipt.py [-h] [--tsv] [--out OUT_FILE] RECEIPT_XML
