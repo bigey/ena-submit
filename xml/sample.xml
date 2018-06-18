@@ -8,8 +8,8 @@
     </SAMPLE_NAME>
     <SAMPLE_ATTRIBUTES>
       <SAMPLE_ATTRIBUTE>
-        <TAG>isolation_source</TAG>
-        <VALUE>soil</VALUE>
+        <TAG>TITLE</TAG>
+        <VALUE>Saccharomyces cerevisiae strain MTF0001</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
         <TAG>strain</TAG>
@@ -20,20 +20,20 @@
         <VALUE>Natural diploid yeast isolated from Lunar soil</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location (region and locality)</TAG>
-        <VALUE>not provided</VALUE>
+        <TAG>collected_by</TAG>
+        <VALUE>Lunar Rover 2</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
         <TAG>geographic location (country and/or sea)</TAG>
         <VALUE>not provided</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>collected_by</TAG>
-        <VALUE>Lunar Rover 2</VALUE>
+        <TAG>geographic location (region and locality)</TAG>
+        <VALUE>not provided</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>TITLE</TAG>
-        <VALUE>Saccharomyces cerevisiae strain MTF0001</VALUE>
+        <TAG>isolation_source</TAG>
+        <VALUE>soil</VALUE>
       </SAMPLE_ATTRIBUTE>
     </SAMPLE_ATTRIBUTES>
   </SAMPLE>
@@ -46,8 +46,8 @@
     </SAMPLE_NAME>
     <SAMPLE_ATTRIBUTES>
       <SAMPLE_ATTRIBUTE>
-        <TAG>isolation_source</TAG>
-        <VALUE>soil</VALUE>
+        <TAG>TITLE</TAG>
+        <VALUE>Saccharomyces cerevisiae strain MTF0000</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
         <TAG>strain</TAG>
@@ -58,20 +58,20 @@
         <VALUE>Natural diploid yeast isolated from Lunar soil</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location (region and locality)</TAG>
-        <VALUE>not provided</VALUE>
+        <TAG>collected_by</TAG>
+        <VALUE>Lunar Rover 1</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
         <TAG>geographic location (country and/or sea)</TAG>
         <VALUE>not provided</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>collected_by</TAG>
-        <VALUE>Lunar Rover 1</VALUE>
+        <TAG>geographic location (region and locality)</TAG>
+        <VALUE>not provided</VALUE>
       </SAMPLE_ATTRIBUTE>
       <SAMPLE_ATTRIBUTE>
-        <TAG>TITLE</TAG>
-        <VALUE>Saccharomyces cerevisiae strain MTF0000</VALUE>
+        <TAG>isolation_source</TAG>
+        <VALUE>soil</VALUE>
       </SAMPLE_ATTRIBUTE>
     </SAMPLE_ATTRIBUTES>
   </SAMPLE>
