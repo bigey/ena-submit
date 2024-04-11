@@ -56,12 +56,12 @@ def main(opts):
 		xml = untangle.parse(opts.xml_file)
 		receipt = xml.RECEIPT
 	except:
-	    print("Probably not a valid XML file!", file = sys.stderr)
-	    sys.exit(1)
+		print("Probably not a valid XML file!", file = sys.stderr)
+		sys.exit(1)
 
 	if receipt["success"] == "false":
-	    print("Submission failed!", file = sys.stderr)
-	    sys.exit(1)
+		print("Submission failed!", file = sys.stderr)
+		sys.exit(1)
 		
 	# extract receipt data from xml
 	data = extract(receipt)

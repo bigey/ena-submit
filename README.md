@@ -1,6 +1,6 @@
 # Scripts to generate XML files and to submit them to the European Nucleotide Archive (ENA) server
 
-Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files. Informations used to generate XML are extracted from a more convenient LibreOffice spreadsheet (ODS) template (`spreadsheet_template.ods`). The XML receipt is further parsed using `parse-receipt.py` to
+Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files. Informations used to generate XML are extracted from a more convenient Excel spreadsheet template (`spreadsheet_template.xlsx`). The XML receipt is further parsed using `parse-receipt.py` to
 extract accession numbers assigned by the service.
 
 We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.io/en/latest/index.html).
@@ -22,7 +22,7 @@ sudo apt-get install curl
   * hashlib
   * yattag
   * untangle
-  * pyexcel_ods
+  * pandas
 
 install:
 
@@ -49,7 +49,7 @@ Generate xml files to submit to ENA server
 
 positional arguments:
 
-  SPREADSHEET_FILE      spreadsheet file in libreoffice calc format (ods)
+  SPREADSHEET_FILE      Excel spreadsheet file (xls, xlsx, ods)
 
 optional arguments:
 
@@ -57,7 +57,6 @@ optional arguments:
 
   --data_dir DATA_DIR, -d DATA_DIR
                         directory containing the data (reads)
-
                         Default: current dir
 
   --out_dir OUT_DIR, -o OUT_DIR
@@ -89,7 +88,7 @@ optional arguments:
 
 ## Description
 
-Use LibreOffice/OpenOffice to edit the submission informations in the spreadsheet template file (`spreadsheet_template.ods`). Use one sheat for each type of data:
+Use Excel to edit the submission informations in the spreadsheet template file (`spreadsheet_template.xlsx`). Use one sheat for each type of data:
 
 ### Project
 
@@ -162,7 +161,7 @@ This script can be used to:
 
 ### Customization
 
-Please give  the following parameters:
+Please give the following parameters:
 
 #### Type of submission
 
@@ -193,7 +192,7 @@ Update this line accordingly:
 
 The name of the spreadsheet file containing your data. You would start using the template spreadsheet given with the project.
 
-`LIBREOFFICE_ODS="spreadsheet_template.ods"`
+`LIBREOFFICE_ODS="spreadsheet_template.xlsx"`
 
 #### Directory containing data/reads
 
