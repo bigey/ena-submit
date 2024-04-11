@@ -2,7 +2,7 @@
 
 import os, sys, argparse, hashlib
 from yattag import Doc, indent
-from pyexcel_ods import get_data
+from pandas import read_excel
 
 
 def set_up_argparse():
@@ -20,7 +20,7 @@ def set_up_argparse():
 		help = "output directory containing the generated xml files. Default: current dir")
 
 	parser.add_argument("spreadsheet_file", metavar = "SPREADSHEET_FILE", 
-		help = "spreadsheet file in libreoffice calc format (ods)")
+		help = "Excel spreadsheet file (xls, xlsx, ods)")
 	
 	opts = parser.parse_args()
 	return opts
@@ -55,11 +55,11 @@ def _project_xml(projects):
 
 	with tag("PROJECT_SET"):
 
-		for a_project in projects:
+		for index in projects:
 
-			project = projects[a_project]
+			project = projects[index]
 
-			with tag("PROJECT", alias = a_project):
+			with tag("PROJECT", alias = project["alias"]):
 
 				with tag("TITLE"):
 					text(project["TITLE"])
@@ -77,11 +77,10 @@ def _sample_xml(samples):
 
 	with tag("SAMPLE_SET"):
 
-		for sample_alias in samples:
-			sample = samples[sample_alias]
-			sample.pop("alias", None)
-			
-			with tag("SAMPLE", alias = sample_alias):
+		for index in samples:
+			sample = samples[index]
+
+			with tag("SAMPLE", alias = sample["alias"]):
 
 				with tag("TITLE"):
 					text(sample["TITLE"])
@@ -116,10 +115,10 @@ def _experiment_xml(experiments):
 
 	with tag("EXPERIMENT_SET"):
 
-		for exp_alias in experiments:
-			experiment = experiments[exp_alias]
+		for index in experiments:
+			experiment = experiments[index]
 
-			with tag("EXPERIMENT", alias = exp_alias):
+			with tag("EXPERIMENT", alias = experiment["alias"]):
 
 				with tag("TITLE"):
 					text(experiment["TITLE"])
@@ -143,7 +142,7 @@ def _experiment_xml(experiments):
 						with tag("LIBRARY_LAYOUT"):
 
 							if experiment["PAIRED"] == "yes":
-								doc.stag("PAIRED", NOMINAL_LENGTH = experiment["NOMINAL_LENGTH"], NOMINAL_SDEV   = experiment["NOMINAL_SDEV"])
+								doc.stag("PAIRED", NOMINAL_LENGTH = experiment["NOMINAL_LENGTH"], NOMINAL_SDEV = experiment["NOMINAL_SDEV"])
 							else:
 								doc.stag("UNPAIRED")
 
@@ -164,10 +163,11 @@ def _run_xml(runs, data_dir):
 
 	with tag("RUN_SET"):
 
-		for run_alias in runs:
-			run = runs[run_alias]
+		for index in runs:
+			run = runs[index]
 
-			with tag("RUN", alias = run_alias):
+			with tag("RUN", alias = run["alias"]):
+
 				doc.stag("EXPERIMENT_REF", refname = run["EXPERIMENT_REF"])
 				
 				with tag("DATA_BLOCK"):
@@ -191,47 +191,38 @@ def _run_xml(runs, data_dir):
 	return(result)
 
 
-def to_dict(data, sheet):
-	return_dict = {}
-	keys = data[sheet].pop(0)
+def to_dict(in_file, sheet):
+	df = read_excel(io=in_file, sheet_name=sheet)
+	return_dict = df.to_dict("index")
 
-	for row in data[sheet]:
-		row_dict = dict(zip(keys, row))
-		return_dict[ row_dict["alias"] ] = row_dict
-	
-	# print(return_dict)
 	return(return_dict)
 
 
-def import_spreadsheet_data(file):
-	log("Processing spreadsheet file {}...".format(file))
-	return( get_data(file) )
-
-
-def generate_xml_files(data, data_dir, out_dir):
+def generate_xml_files(in_file, data_dir, out_dir):
 	out_dir = os.path.normpath(out_dir)
 	log("Generating XML files...")
 
-	for sheet in data:
+	for sheet in ["project","sample","experiment","run"]:
 		log("  Processing {}...".format(sheet))
 
 		if sheet == "project":
-			projects = to_dict(data, sheet)
+			projects = to_dict(in_file, "project")
+            
 			with open(out_dir+"/project.xml", "w") as file:
 				file.write(_project_xml(projects))
 
 		if sheet == "sample":
-			samples = to_dict(data, sheet)
+			samples = to_dict(in_file, "sample")
 			with open(out_dir+"/sample.xml", "w") as file:
 				file.write(_sample_xml(samples))
 
 		if sheet == "experiment":
-			experiments = to_dict(data, sheet)
+			experiments = to_dict(in_file, "experiment")
 			with open(out_dir+"/experiment.xml", "w") as file:
 				file.write(_experiment_xml(experiments))
 
 		if sheet == "run":
-			runs = to_dict(data, sheet)
+			runs = to_dict(in_file, "run")
 			with open(out_dir+"/run.xml", "w") as file:
 				file.write(_run_xml(runs, data_dir))
 
@@ -253,8 +244,7 @@ def main(opts):
 	make_dir_if_not_exist(opts.out_dir)
 
 	# process data
-	submit_data = import_spreadsheet_data(opts.spreadsheet_file)
-	generate_xml_files(submit_data, opts.data_dir, opts.out_dir)
+	generate_xml_files(opts.spreadsheet_file, opts.data_dir, opts.out_dir)
 
 
 if __name__ == "__main__":
