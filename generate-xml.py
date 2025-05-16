@@ -2,7 +2,7 @@
 
 import os, sys, argparse, hashlib
 from yattag import Doc, indent
-from pandas import read_excel
+from pandas import read_excel, isna
 
 
 def set_up_argparse():
@@ -92,9 +92,11 @@ def _sample_xml(samples):
 					with tag("SCIENTIFIC_NAME"):
 						text(sample["SCIENTIFIC_NAME"])
 						sample.pop("SCIENTIFIC_NAME")
-					with tag("COMMON_NAME"):
-						text(sample["COMMON_NAME"])
-						sample.pop("COMMON_NAME")
+					
+					if not isna(sample["COMMON_NAME"]):
+						with tag("COMMON_NAME"):
+							text(sample["COMMON_NAME"])
+							sample.pop("COMMON_NAME")
 
 				with tag("SAMPLE_ATTRIBUTES"):
 
@@ -142,7 +144,10 @@ def _experiment_xml(experiments):
 						with tag("LIBRARY_LAYOUT"):
 
 							if experiment["PAIRED"] == "yes":
-								doc.stag("PAIRED", NOMINAL_LENGTH = experiment["NOMINAL_LENGTH"], NOMINAL_SDEV = experiment["NOMINAL_SDEV"])
+								if isna(experiment["NOMINAL_LENGTH"]) or isna(experiment["NOMINAL_SDEV"]):
+									doc.stag("PAIRED")
+								else:
+									doc.stag("PAIRED", NOMINAL_LENGTH = experiment["NOMINAL_LENGTH"], NOMINAL_SDEV = experiment["NOMINAL_SDEV"])
 							else:
 								doc.stag("UNPAIRED")
 
