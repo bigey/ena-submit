@@ -109,13 +109,14 @@ Mandatory
 * TAXON_ID: *eg*: 4932
 * SCIENTIFIC_NAME: *eg*: Saccharomyces cerevisiae
 * COMMON_NAME: *eg*: baker's yeast (optional)
+* geographic location (country and/or sea)
+* collection data (YYY-MM-DD)
 
 Optional
 
 * strain
 * sample_description
 * collected_by
-* geographic location (country and/or sea)
 * geographic location (region and locality)
 * isolation_source
 
@@ -188,11 +189,11 @@ Update this line accordingly:
 
 `CREDENDIAL=".credential"`
 
-#### LibreOffice spreadsheet
+#### XLS spreadsheet
 
 The name of the spreadsheet file containing your data. You would start using the template spreadsheet given with the project.
 
-`LIBREOFFICE_ODS="spreadsheet_template.xlsx"`
+`TEMPLATE_XLS="spreadsheet_template.xlsx"`
 
 #### Directory containing data/reads
 

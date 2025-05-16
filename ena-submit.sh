@@ -26,7 +26,7 @@ CREDENDIAL=.credential
 # SPREADSHEET FILE
 # Name of the spreadsheet file containing your data.
 # Start using the giving template
-LIBREOFFICE_ODS="spreadsheet_template.ods"
+TEMPLATE_XLS="spreadsheet_template.xlsx"
 
 # DIRECTORY CONTAINING THE DATA READS
 # The name of the directory where sequencing reads are stored
@@ -67,15 +67,13 @@ read user pass < $CREDENDIAL
 echo
 echo "# Upload data to ENA FTP server..."
 echo
-curl --user $user:$pass \
-	-T "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" \
-  --url $FTP
+curl --user $user:$pass --upload-file "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" --url $FTP
 
 # GENERATE XML FILES
 echo
 echo "# Generate XML submission files..."
 echo
-./generate-xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $LIBREOFFICE_ODS
+./generate-xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $TEMPLATE_XLS
 
 project=$XML_OUT_DIR/project.xml
 sample=$XML_OUT_DIR/sample.xml
