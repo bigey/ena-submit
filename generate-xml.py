@@ -102,11 +102,12 @@ def _sample_xml(samples):
 
 					for key in sample:
 
-						with tag("SAMPLE_ATTRIBUTE"):
-							with tag("TAG"):
-								text(key)
-							with tag("VALUE"):
-								text(sample[key])
+						if not isna(sample[key]):
+							with tag("SAMPLE_ATTRIBUTE"):
+								with tag("TAG"):
+									text(key)
+								with tag("VALUE"):
+									text(sample[key])
 
 	result = indent(doc.getvalue())
 	return(result)
@@ -185,7 +186,7 @@ def _run_xml(runs, data_dir):
 							checksum_method = "MD5",
 							checksum = md5sum(data_dir+"/"+run["filename_r1"]))
 
-						if "filename_r2" in run:
+						if not isna(run["filename_r2"]):
 							doc.stag("FILE", 
 								filename = run["filename_r2"], 
 								filetype = run["filetype"],
