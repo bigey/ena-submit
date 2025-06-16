@@ -94,58 +94,69 @@ Use Excel to edit the submission informations in the spreadsheet template file (
 
 A project (also referred to as a study) is used to group other objects together, so we will look into creating a project as a first step towards to submit ENA objects.
 
-* alias: this is a unique code to refer to your study, *eg* proj_0000
-* TITLE: a descriptive short title
-* DESCRIPTION: an abstract detailing the project
+* Project ID: this is a unique code to refer to your study - mandatory, *e.g.* proj_0000 - mandatory
+* Title: a descriptive short title - mandatory
+* Description: an abstract detailing the project - mandatory
 
 ### Sample
 
-Use one line per sample. ENA provides sample checklists which define all the mandatory and recommended attributes for specific types of samples. We do not define a checklist here, then the samples will be validated against the ENA default checklist [ERC000011](https://www.ebi.ac.uk/ena/data/view/ERC000011). This checklist has virtually no mandatory fields but contains many optional attributes that can help you to annotate your samples to the highest possible standard. You can find all the checklists [here](http://www.ebi.ac.uk/ena/submit/checklists).
+Use one line per sample. ENA provides sample checklists which define all the mandatory and recommended attributes for specific types of samples. We do not define a checklist here, then the samples will be validated against the ENA default checklist [ERC000011](https://www.ebi.ac.uk/ena/data/view/ERC000011). This checklist has virtually no mandatory fields but contains many optional attributes that can help you to annotate your samples to the highest possible standard. You can find all the [checklists](http://www.ebi.ac.uk/ena/submit/checklists).
 
-Mandatory
+Mandatory:
 
-* alias: a unique code, *eg*: sam_0000
-* TITLE: sample name *eg*: Saccharomyces cerevisiae S288C
-* TAXON_ID: *eg*: 4932
-* SCIENTIFIC_NAME: *eg*: Saccharomyces cerevisiae
-* COMMON_NAME: *eg*: baker's yeast (optional)
-* geographic location (country and/or sea)
-* collection data (YYY-MM-DD)
+* Sample ID: a unique code - mandatory, *e.g.*: sam_0000
+* Title: sample name *e.g.*: Saccharomyces cerevisiae S288C
+* Taxon ID: *e.g.*: 4932
+* Scientific name: *e.g.*: Saccharomyces cerevisiae
+* Geographic location (country and/or sea): see the list of [countries](http://insdc.org/country.html). Other possible values: ["not applicable", "not collected", "not provided"]
+* Collection date: format YYYY-MM-DD, YYYY-MM or YYYY
 
-Optional
+Optional:
 
-* strain
-* sample_description
-* collected_by
-* geographic location (region and locality)
-* isolation_source
+* Common name: free text, *e.g.*: baker's yeast
+* Strain: free text
+* Culture collection: format COLLECTION:ID, *e.g.*: CBS:512
+* Sample description: free text
+* Collected by: free text
+* Geographic location (region and locality): free text
+* Isolation source: free text
 
 ### Experiment
 
 An experiment object represents the library that is created from a sample and used in a sequencing experiment. The experiment object contains details about the sequencing platform and library protocols.
 An experiment is part of a study and is assocated with a sample. It is common to have multiple libraries and sequencing experiments for a single sample. Experiments point to samples to allow sharing of sample information between multiple experiments.
 
-* alias: a unique code, *eg*: exp_0000
-* TITLE: a short title
-* STUDY_REF: code of the project, *eg*: proj_0000
-* SAMPLE_DESCRIPTOR: code of the sample, *eg*: sample_0000
-* LIBRARY_NAME: a unique code, *eg*: lib_0000
-* LIBRARY_STRATEGY: controlled value fields
-* LIBRARY_SOURCE: controlled value fields
-* LIBRARY_SELECTION: controlled value fields
-* PAIRED: yes|no
-* NOMINAL_LENGTH: average insert size
-* NOMINAL_SDEV: standard deviation of insert size (optional)
-* LIBRARY_CONSTRUCTION_PROTOCOL: detailed protocol
-* INSTRUMENT_MODEL: *eg*: Illumina HiSeq 2000
+Mandatory:
+
+* Experiment ID: a unique code, *e.g.*: exp_0000
+* Title: a short title, free text
+* Project reference: the internal code of the project (*e.g.*: proj_0000) or the accession number of the submitted Project/Study (PRJxxxxxxx)
+* Project status: either "internal" (internal code of the project) or "accession" (already submitted project)
+* Sample reference: the internal code of the sample (*e.g.*: sample_0000) or the accession number of the submited BioSample (SAMEAxxxxxxx)
+* Sample status: either "internal" (internal code of the sample) or "accession" (already submitted sample)
+* Library name: a unique code describing the library, *e.g.*: lib_0000
+* Library strategy: controlled value describing the sequencing strategy, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-strategy)
+* Library source: controlled value describing the source material, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-source)
+* Library selection: controlled value describing the selection technics, see [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection)
+* Paired: is sequencing is paired ("yes") or unpaired/single ("no")
+* Library construction protocol: detailed protocol, free text
+* Platform: controlled value describing the sequencing platform used, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-platform)
+* Instrument model: controlled value describing the instrument mode, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-instrument)
+
+Optional:
+
+* Insert size: average insert size (bp) - optional
+* Insert size SD: standard deviation of the insert size - optional
 
 ### Run
 
-The run points to the experiment using the experiment’s alias.
+The run points to an experiment using the experiment ID code.
 
-* alias: a unique code, *eg*: run_0000
-* EXPERIMENT_REF: code of the experiment, *eg*: exp_0000
-* filetype: *eg*: fastq
+Mandatory:
+
+* Run ID: internal unique code, *e.g.*: run_0000
+* Experiment reference: the internal code of the experiment, *e.g.*: exp_0000
+* filetype: *e.g.*: fastq
 * filename_r1: path to read file 1
 * filename_r2: path to read file 2 (optional if single)
 
@@ -178,7 +189,7 @@ Select:
 
 #### ENA credentials
 
-If you have not submitted to Webin before, please register a submission account [here](https://www.ebi.ac.uk/ena/submit/sra/#home).
+If you have not submitted to Webin before, please register a [submission account](https://www.ebi.ac.uk/ena/submit/sra/#home).
 
 Create a file containing the credentials used to connect to the ENA
 server: one line with `user` and `password` separated by a space character:

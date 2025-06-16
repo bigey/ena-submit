@@ -56,15 +56,28 @@ def _project_xml(projects):
 	with tag("PROJECT_SET"):
 
 		for index in projects:
-
 			project = projects[index]
 
-			with tag("PROJECT", alias = project["Project ID"]):
+			# Check mandatory fields
+			# If any of the mandatory fields are missing, log an error and exit
+			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			if isna(project["Project ID"]):
+				log(f"Project ID is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(project["Title"]):
+				log(f"Title is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(project["Description"]):
+				log(f"Description is a mandatory field, line index: {index}")
+				exit(1)
 
+			with tag("PROJECT", alias = project["Project ID"]):
+				
 				with tag("TITLE"):
-					text(project["TITLE"])
+					text(project["Title"])
 				with tag("DESCRIPTION"):
-					text(project["DESCRIPTION"])
+					text(project["Description"])
+				
 				with tag("SUBMISSION_PROJECT"):
 					doc.stag("SEQUENCING_PROJECT")
 	
@@ -80,69 +93,114 @@ def _sample_xml(samples):
 		for index in samples:
 			sample = samples[index]
 
-			with tag("SAMPLE", alias = sample["Sample ID"]):
+			# Check mandatory fields
+			# If any of the mandatory fields are missing, log an error and exit
+			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			if isna(sample["Sample ID"]):
+				log(f"Sample ID is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(sample["Title"]):
+				log(f"Title is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(sample["Taxon ID"]):
+				log(f"Taxon ID is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(sample["Scientific name"]):
+				log(f"Scientific name is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(sample["Sample description"]):
+				log(f"Sample description is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(sample["Collection date"]):
+				log(f"Collection date is a mandatory field (YYYY-MM-DD), line index: {index}")
+				exit(1)
+			if isna(sample["Geographic location (country and/or sea)"]):
+				log(f"Geographic location (country and/or sea) is a mandatory field, line index: {index}")
+				exit(1)
 
+			with tag("SAMPLE", alias = sample["Sample ID"]):
+				
+				# mandatory attribute
 				with tag("TITLE"):
 					text(sample["Title"])
 
 				with tag("SAMPLE_NAME"):
+
+					# mandatory attribute
 					with tag("TAXON_ID"):
 						text(sample["Taxon ID"])
-						sample.pop("Taxon ID")
+					
+					# mandatory attribute
 					with tag("SCIENTIFIC_NAME"):
 						text(sample["Scientific name"])
-						sample.pop("Scientific name")
-					
-					if not isna(sample["Common name"]):
-						with tag("COMMON_NAME"):
-							text(sample["Common name"])
-							sample.pop("Common name")
+
+					# mandatory attribute					
+					with tag("COMMON_NAME"):
+						text(sample["Common name"])
 
 				with tag("SAMPLE_ATTRIBUTES"):
 
+					# madatory attribute
+					with tag("SAMPLE_ATTRIBUTE"):
+						with tag("TAG"):
+							text("collection date")
+						with tag("VALUE"):
+							text(sample["Collection date"])
+					
+					# mandatory attribute
+					with tag("SAMPLE_ATTRIBUTE"):
+						with tag("TAG"):
+							text("geographic location (country and/or sea)")
+						with tag("VALUE"):
+							text(sample["Geographic location (country and/or sea)"])
+
+					# mandatory attribute
+					with tag("SAMPLE_ATTRIBUTE"):
+						with tag("TAG"):
+							text("sample_description")
+						with tag("VALUE"):
+							text(sample["Sample description"])
+					
+					# optional attribute
+					if not isna(sample["Culture collection"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("culture_collection")
+							with tag("VALUE"):
+								text(sample["Culture collection"])
+					
+					# optional attribute
 					if not isna(sample["Strain"]):
 						with tag("SAMPLE_ATTRIBUTE"):
 							with tag("TAG"):
 								text("strain")
 							with tag("VALUE"):
 								text(sample["Strain"])
-					if not isna(sample["Collection date"]):
-						with tag("SAMPLE_ATTRIBUTE"):
-							with tag("TAG"):
-								text("collection date")
-							with tag("VALUE"):
-								text(sample["Collection date"])
-					if not isna(sample["Geographic location (country and/or sea)"]):
-						with tag("SAMPLE_ATTRIBUTE"):
-							with tag("TAG"):
-								text("geographic location (country and/or sea)")
-							with tag("VALUE"):
-								text(sample["Geographic location (country and/or sea)"])
+					
+					# optional attribute
 					if not isna(sample["Geographic location (region and locality)"]):
 						with tag("SAMPLE_ATTRIBUTE"):
 							with tag("TAG"):
 								text("geographic location (region and locality)")
 							with tag("VALUE"):
 								text(sample["Geographic location (region and locality)"])
+					
+					# optional attribute
 					if not isna(sample["Isolation source"]):
 						with tag("SAMPLE_ATTRIBUTE"):
 							with tag("TAG"):
 								text("isolation_source")
 							with tag("VALUE"):
 								text(sample["Isolation source"])
+					
+					# optional attribute
 					if not isna(sample["Collected by"]):
 						with tag("SAMPLE_ATTRIBUTE"):
 							with tag("TAG"):
 								text("collected_by")
 							with tag("VALUE"):
 								text(sample["Collected by"])
-					if not isna(sample["Sample description"]):
-						with tag("SAMPLE_ATTRIBUTE"):
-							with tag("TAG"):
-								text("sample_description")
-							with tag("VALUE"):
-								text(sample["Sample description"])
-
+					
 	result = indent(doc.getvalue())
 	return(result)
 
@@ -154,6 +212,52 @@ def _experiment_xml(experiments):
 
 		for index in experiments:
 			experiment = experiments[index]
+
+			# Check mandatory fields
+			# If any of the mandatory fields are missing, log an error and exit
+			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			if isna(experiment["Experiment ID"]):
+				log(f"Experiment ID is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Title"]):
+				log(f"Title is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Project status"]):
+				log(f"Project status is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Project reference"]):
+				log(f"Project reference is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Sample status"]):
+				log(f"Sample status is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Sample reference"]):
+				log(f"Sample reference is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Library name"]):
+				log(f"Library name is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Library strategy"]):
+				log(f"Library strategy is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Library source"]):
+				log(f"Library source is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Library selection"]):
+				log(f"Library selection is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Platform"]):
+				log(f"Platform is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Instrument model"]):
+				log(f"Instrument model is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Paired"]):
+				log(f"Paired is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(experiment["Library construction protocol"]):
+				log(f"Library construction protocol is a mandatory field, line index: {index}")
+				exit(1)
 
 			with tag("EXPERIMENT", alias = experiment["Experiment ID"]):
 
@@ -168,7 +272,8 @@ def _experiment_xml(experiments):
 					doc.stag("STUDY_REF", accession = experiment["Project reference"])
 				else:
 					# This is a fallback, but it should not happen if the spreadsheet is well-formed
-					log(f"Warning: Project status should be either 'internal' or 'accession' for experiment {experiment["Experiment ID"]}")
+					log(f"Project status should be either 'internal' or 'accession' for experiment {experiment['Experiment ID']}, line index: {index}")
+					exit(1)
 				
 				with tag("DESIGN"):
 					doc.stag("DESIGN_DESCRIPTION")
@@ -181,7 +286,8 @@ def _experiment_xml(experiments):
 						doc.stag("SAMPLE_DESCRIPTOR", accession = experiment["Sample reference"])
 					else:
 						# This is a fallback, but it should not happen if the spreadsheet is well-formed
-						log(f"Warning: Sample status should be either 'internal' or 'accession' for experiment {experiment['Experiment ID']}")
+						log(f"Sample status should be either 'internal' or 'accession' for experiment {experiment['Experiment ID']}, line index: {index}")
+						exit(1)
 
 					with tag("LIBRARY_DESCRIPTOR"):
 
@@ -209,9 +315,11 @@ def _experiment_xml(experiments):
 							text(experiment["Library construction protocol"])
 
 				with tag("PLATFORM"):
+					platforms = ["ILLUMINA", "BGISEQ", "OXFORD_NANOPORE", "PACBIO_SMRT", "ION_TORRENT", "CAPILLARY", "DNBSEQ"]
 					platform = experiment["Platform"].upper()
-					if platform not in ["ILLUMINA", "BGISEQ", "OXFORD_NANOPORE", "PACBIO_SMRT", "ION_TORRENT", "CAPILLARY"]:
-						log(f"Warning: Platform should be one of 'ILLUMINA', 'BGISEQ', 'OXFORD_NANOPORE', 'PACBIO_SMRT', 'ION_TORRENT' or 'CAPILLARY' for experiment {experiment['Experiment ID']}")
+					if platform not in platforms:
+						log(f"Platform should be one of {platforms} for experiment {experiment['Experiment ID']}, line index: {index}")
+						exit(1)
 					else:
 						with tag(platform):
 							with tag("INSTRUMENT_MODEL"):
@@ -228,6 +336,25 @@ def _run_xml(runs, data_dir):
 
 		for index in runs:
 			run = runs[index]
+
+			# Check mandatory fields
+			# If any of the mandatory fields are missing, log an error and exit
+			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			if isna(run["Run ID"]):
+				log(f"Run ID is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(run["Experiment reference"]):
+				log(f"Experiment reference is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(run["filetype"]):
+				log(f"filetype is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(run["filename_r1"]):
+				log(f"filename_r1 is a mandatory field, line index: {index}")
+				exit(1)
+			if not os.path.exists(data_dir+"/"+run["filename_r1"]):
+				log(f"File {run['filename_r1']} does not exist in the data directory ({data_dir}), line index: {index}")
+				exit(1)
 
 			with tag("RUN", alias = run["Run ID"]):
 
