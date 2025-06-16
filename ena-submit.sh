@@ -79,19 +79,33 @@ project=$XML_OUT_DIR/project.xml
 sample=$XML_OUT_DIR/sample.xml
 experiment=$XML_OUT_DIR/experiment.xml
 run=$XML_OUT_DIR/run.xml
+files=""
+
+# CHECK IF XML FILES WERE GENERATED
+if [ -f $project ]; then
+  echo "Project XML file: $project generated successfully."
+  files="$file -F PROJECT=@${project} "
+fi
+if [ -f $sample ]; then
+  echo "Sample XML file: $sample generated successfully."
+  files="$files -F SAMPLE=@${sample} "
+fi
+if [ -f $experiment ]; then
+  echo "Experiment XML file: $experiment generated successfully."
+  files="$files -F EXPERIMENT=@${experiment} "
+fi
+if [ -f $run ]; then
+  echo "Run XML file: $run generated successfully."
+  files="$files -F RUN=@${run} "
+else
+  echo "Run XML file: $run not found. Skipping run submission."
+fi
 
 # ENA SUBMISSION 
 echo
 echo "# Submit XML files to ENA server..."
 echo
-curl -u $user:$pass \
-  -F "ACTION=${ACTION}" \
-  -F "PROJECT=@${project}" \
-  -F "SAMPLE=@${sample}" \
-  -F "EXPERIMENT=@${experiment}" \
-  -F "RUN=@${run}" \
-  --url ${URL} > server-receipt.xml
-
+curl -u $user:$pass -F "ACTION=${ACTION}" ${files} --url ${URL} > server-receipt.xml
 echo
 
 if grep "RECEIPT" server-receipt.xml &> /dev/null; then

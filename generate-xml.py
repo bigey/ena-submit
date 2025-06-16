@@ -59,7 +59,7 @@ def _project_xml(projects):
 
 			project = projects[index]
 
-			with tag("PROJECT", alias = project["alias"]):
+			with tag("PROJECT", alias = project["Project ID"]):
 
 				with tag("TITLE"):
 					text(project["TITLE"])
@@ -80,34 +80,68 @@ def _sample_xml(samples):
 		for index in samples:
 			sample = samples[index]
 
-			with tag("SAMPLE", alias = sample["alias"]):
+			with tag("SAMPLE", alias = sample["Sample ID"]):
 
 				with tag("TITLE"):
-					text(sample["TITLE"])
+					text(sample["Title"])
 
 				with tag("SAMPLE_NAME"):
 					with tag("TAXON_ID"):
-						text(sample["TAXON_ID"])
-						sample.pop("TAXON_ID")
+						text(sample["Taxon ID"])
+						sample.pop("Taxon ID")
 					with tag("SCIENTIFIC_NAME"):
-						text(sample["SCIENTIFIC_NAME"])
-						sample.pop("SCIENTIFIC_NAME")
+						text(sample["Scientific name"])
+						sample.pop("Scientific name")
 					
-					if not isna(sample["COMMON_NAME"]):
+					if not isna(sample["Common name"]):
 						with tag("COMMON_NAME"):
-							text(sample["COMMON_NAME"])
-							sample.pop("COMMON_NAME")
+							text(sample["Common name"])
+							sample.pop("Common name")
 
 				with tag("SAMPLE_ATTRIBUTES"):
 
-					for key in sample:
-
-						if not isna(sample[key]):
-							with tag("SAMPLE_ATTRIBUTE"):
-								with tag("TAG"):
-									text(key)
-								with tag("VALUE"):
-									text(sample[key])
+					if not isna(sample["Strain"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("strain")
+							with tag("VALUE"):
+								text(sample["Strain"])
+					if not isna(sample["Collection date"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("collection date")
+							with tag("VALUE"):
+								text(sample["Collection date"])
+					if not isna(sample["Geographic location (country and/or sea)"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("geographic location (country and/or sea)")
+							with tag("VALUE"):
+								text(sample["Geographic location (country and/or sea)"])
+					if not isna(sample["Geographic location (region and locality)"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("geographic location (region and locality)")
+							with tag("VALUE"):
+								text(sample["Geographic location (region and locality)"])
+					if not isna(sample["Isolation source"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("isolation_source")
+							with tag("VALUE"):
+								text(sample["Isolation source"])
+					if not isna(sample["Collected by"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("collected_by")
+							with tag("VALUE"):
+								text(sample["Collected by"])
+					if not isna(sample["Sample description"]):
+						with tag("SAMPLE_ATTRIBUTE"):
+							with tag("TAG"):
+								text("sample_description")
+							with tag("VALUE"):
+								text(sample["Sample description"])
 
 	result = indent(doc.getvalue())
 	return(result)
@@ -121,44 +155,67 @@ def _experiment_xml(experiments):
 		for index in experiments:
 			experiment = experiments[index]
 
-			with tag("EXPERIMENT", alias = experiment["alias"]):
+			with tag("EXPERIMENT", alias = experiment["Experiment ID"]):
 
 				with tag("TITLE"):
-					text(experiment["TITLE"])
-				doc.stag("STUDY_REF", refname = experiment["STUDY_REF"])
+					text(experiment["Title"])
+
+				if experiment["Project status"] == "internal":
+					# If the project is internal, we need to use the project ID
+					doc.stag("STUDY_REF", refname = experiment["Project reference"])
+				elif experiment["Project status"] == "accession":
+					# If the project is existing, we need to use the ENA accession number
+					doc.stag("STUDY_REF", accession = experiment["Project reference"])
+				else:
+					# This is a fallback, but it should not happen if the spreadsheet is well-formed
+					log(f"Warning: Project status should be either 'internal' or 'accession' for experiment {experiment["Experiment ID"]}")
 				
 				with tag("DESIGN"):
 					doc.stag("DESIGN_DESCRIPTION")
-					doc.stag("SAMPLE_DESCRIPTOR", refname = experiment["SAMPLE_DESCRIPTOR"])
+
+					if experiment["Sample status"] == "internal":
+						# If the sample is internal, we need to use the sample ID
+						doc.stag("SAMPLE_DESCRIPTOR", refname = experiment["Sample reference"])
+					elif experiment["Sample status"] == "accession":
+						# If the sample is existing, we need to use the ENA accession number
+						doc.stag("SAMPLE_DESCRIPTOR", accession = experiment["Sample reference"])
+					else:
+						# This is a fallback, but it should not happen if the spreadsheet is well-formed
+						log(f"Warning: Sample status should be either 'internal' or 'accession' for experiment {experiment['Experiment ID']}")
 
 					with tag("LIBRARY_DESCRIPTOR"):
 
 						with tag("LIBRARY_NAME"):
-							text(experiment["LIBRARY_NAME"])
+							text(experiment["Library name"])
 						with tag("LIBRARY_STRATEGY"):
-							text(experiment["LIBRARY_STRATEGY"])
+							text(experiment["Library strategy"])
 						with tag("LIBRARY_SOURCE"):
-							text(experiment["LIBRARY_SOURCE"])
+							text(experiment["Library source"])
 						with tag("LIBRARY_SELECTION"):
-							text(experiment["LIBRARY_SELECTION"])
+							text(experiment["Library selection"])
 						
 						with tag("LIBRARY_LAYOUT"):
 
-							if experiment["PAIRED"] == "yes":
-								if isna(experiment["NOMINAL_LENGTH"]) or isna(experiment["NOMINAL_SDEV"]):
+							if experiment["Paired"] == "yes":
+								if isna(experiment["Insert size"]) or isna(experiment["Insert size SD"]):
+									# If the insert size or standard deviation is not provided, we do not include them
 									doc.stag("PAIRED")
 								else:
-									doc.stag("PAIRED", NOMINAL_LENGTH = experiment["NOMINAL_LENGTH"], NOMINAL_SDEV = experiment["NOMINAL_SDEV"])
+									doc.stag("PAIRED", NOMINAL_LENGTH = experiment["Insert size"], NOMINAL_SDEV = experiment["Insert size SD"])
 							else:
 								doc.stag("UNPAIRED")
 
 						with tag("LIBRARY_CONSTRUCTION_PROTOCOL"):
-							text(experiment["LIBRARY_SELECTION"])
+							text(experiment["Library construction protocol"])
 
 				with tag("PLATFORM"):
-					with tag("ILLUMINA"):
-						with tag("INSTRUMENT_MODEL"):
-							text(experiment["INSTRUMENT_MODEL"])
+					platform = experiment["Platform"].upper()
+					if platform not in ["ILLUMINA", "BGISEQ", "OXFORD_NANOPORE", "PACBIO_SMRT", "ION_TORRENT", "CAPILLARY"]:
+						log(f"Warning: Platform should be one of 'ILLUMINA', 'BGISEQ', 'OXFORD_NANOPORE', 'PACBIO_SMRT', 'ION_TORRENT' or 'CAPILLARY' for experiment {experiment['Experiment ID']}")
+					else:
+						with tag(platform):
+							with tag("INSTRUMENT_MODEL"):
+								text(experiment["Instrument model"])
 
 	result = indent(doc.getvalue())
 	return(result)
@@ -172,9 +229,9 @@ def _run_xml(runs, data_dir):
 		for index in runs:
 			run = runs[index]
 
-			with tag("RUN", alias = run["alias"]):
+			with tag("RUN", alias = run["Run ID"]):
 
-				doc.stag("EXPERIMENT_REF", refname = run["EXPERIMENT_REF"])
+				doc.stag("EXPERIMENT_REF", refname = run["Experiment reference"])
 				
 				with tag("DATA_BLOCK"):
 				
@@ -213,22 +270,35 @@ def generate_xml_files(in_file, data_dir, out_dir):
 
 		if sheet == "project":
 			projects = to_dict(in_file, "project")
+			if len(projects) == 0:
+				log("  No projects found in the spreadsheet. Skipping project XML generation.")
+				continue
             
 			with open(out_dir+"/project.xml", "w") as file:
 				file.write(_project_xml(projects))
 
 		if sheet == "sample":
 			samples = to_dict(in_file, "sample")
+			if len(samples) == 0:
+				log("  No samples found in the spreadsheet. Skipping sample XML generation.")
+				continue
+
 			with open(out_dir+"/sample.xml", "w") as file:
 				file.write(_sample_xml(samples))
 
 		if sheet == "experiment":
 			experiments = to_dict(in_file, "experiment")
+			if len(experiments) == 0:
+				log("  No experiments found in the spreadsheet. Skipping experiment XML generation.")
+				continue
 			with open(out_dir+"/experiment.xml", "w") as file:
 				file.write(_experiment_xml(experiments))
 
 		if sheet == "run":
 			runs = to_dict(in_file, "run")
+			if len(runs) == 0:
+				log("  No runs found in the spreadsheet. Skipping run XML generation.")
+				continue
 			with open(out_dir+"/run.xml", "w") as file:
 				file.write(_run_xml(runs, data_dir))
 
