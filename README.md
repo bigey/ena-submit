@@ -104,12 +104,12 @@ Use one line per sample. ENA provides sample checklists which define all the man
 
 Mandatory:
 
-* Sample ID: a unique code - mandatory, *e.g.*: sam_0000
+* Sample ID: an internal unique code - mandatory, *e.g.*: sam_0000
 * Title: sample name *e.g.*: Saccharomyces cerevisiae S288C
-* Taxon ID: *e.g.*: 4932
 * Scientific name: *e.g.*: Saccharomyces cerevisiae
+* Taxon ID: obtained from [NCBI taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy), *e.g.*: 4932
 * Geographic location (country and/or sea): see the list of [countries](http://insdc.org/country.html). Other possible values: ["not applicable", "not collected", "not provided"]
-* Collection date: format YYYY-MM-DD, YYYY-MM or YYYY
+* Collection date: format YYYY-MM-DD, YYYY-MM or YYYY. Other possible values: ["not applicable", "not collected", "not provided"]
 
 Optional:
 
@@ -123,25 +123,25 @@ Optional:
 
 ### Experiment
 
-An experiment object represents the library that is created from a sample and used in a sequencing experiment. The experiment object contains details about the sequencing platform and library protocols.
+An experiment object represents both a library that is created from a sample and a sequencing experiment. The experiment object contains details about the sequencing platform and library protocols.
 An experiment is part of a study and is assocated with a sample. It is common to have multiple libraries and sequencing experiments for a single sample. Experiments point to samples to allow sharing of sample information between multiple experiments.
 
 Mandatory:
 
-* Experiment ID: a unique code, *e.g.*: exp_0000
+* Experiment ID: an internal unique code, *e.g.*: exp_0000
 * Title: a short title, free text
 * Project reference: the internal code of the project (*e.g.*: proj_0000) or the accession number of the submitted Project/Study (PRJxxxxxxx)
 * Project status: either "internal" (internal code of the project) or "accession" (already submitted project)
 * Sample reference: the internal code of the sample (*e.g.*: sample_0000) or the accession number of the submited BioSample (SAMEAxxxxxxx)
 * Sample status: either "internal" (internal code of the sample) or "accession" (already submitted sample)
-* Library name: a unique code describing the library, *e.g.*: lib_0000
+* Library name: an internal unique code describing the library, *e.g.*: lib_0000
 * Library strategy: controlled value describing the sequencing strategy, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-strategy)
 * Library source: controlled value describing the source material, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-source)
 * Library selection: controlled value describing the selection technics, see [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection)
 * Paired: is sequencing is paired ("yes") or unpaired/single ("no")
 * Library construction protocol: detailed protocol, free text
 * Platform: controlled value describing the sequencing platform used, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-platform)
-* Instrument model: controlled value describing the instrument mode, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-instrument)
+* Instrument model: controlled value describing the instrument model, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-instrument)
 
 Optional:
 
@@ -154,9 +154,9 @@ The run points to an experiment using the experiment ID code.
 
 Mandatory:
 
-* Run ID: internal unique code, *e.g.*: run_0000
+* Run ID: an internal unique code, *e.g.*: run_0000
 * Experiment reference: the internal code of the experiment, *e.g.*: exp_0000
-* filetype: *e.g.*: fastq
+* filetype: one of fastq, bam or cram, *e.g.*: fastq
 * filename_r1: path to read file 1
 * filename_r2: path to read file 2 (optional if single)
 
