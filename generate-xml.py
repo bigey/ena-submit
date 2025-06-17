@@ -134,9 +134,10 @@ def _sample_xml(samples):
 					with tag("SCIENTIFIC_NAME"):
 						text(sample["Scientific name"])
 
-					# mandatory attribute					
-					with tag("COMMON_NAME"):
-						text(sample["Common name"])
+					# optional attribute
+					if not isna(sample["Common name"]):
+						with tag("COMMON_NAME"):
+							text(sample["Common name"])
 
 				with tag("SAMPLE_ATTRIBUTES"):
 
@@ -357,7 +358,8 @@ def _run_xml(runs, data_dir):
 				exit(1)
 
 			with tag("RUN", alias = run["Run ID"]):
-
+				
+				log(f"    {run['Run ID']}")
 				doc.stag("EXPERIMENT_REF", refname = run["Experiment reference"])
 				
 				with tag("DATA_BLOCK"):
@@ -393,7 +395,7 @@ def generate_xml_files(in_file, data_dir, out_dir):
 	log("Generating XML files...")
 
 	for sheet in ["project","sample","experiment","run"]:
-		log("  Processing {}...".format(sheet))
+		log(f"  Processing {sheet}...")
 
 		if sheet == "project":
 			projects = to_dict(in_file, "project")

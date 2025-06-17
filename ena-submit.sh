@@ -9,7 +9,7 @@ set -e
 # One of the following:
 # "true": submit to testing server, 
 # "false": real data submission
-TEST="true"
+TEST="false"
 
 # EXPECTED ACTION
 # One of the following actions:
@@ -67,13 +67,14 @@ read user pass < $CREDENDIAL
 echo
 echo "# Upload data to ENA FTP server..."
 echo
-curl --user $user:$pass --upload-file "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" --url $FTP
+# curl --user $user:$pass --upload-file "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" --url $FTP
 
 # GENERATE XML FILES
 echo
 echo "# Generate XML submission files..."
 echo
 ./generate-xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $TEMPLATE_XLS
+echo
 
 project=$XML_OUT_DIR/project.xml
 sample=$XML_OUT_DIR/sample.xml
