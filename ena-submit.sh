@@ -126,7 +126,7 @@ if grep "RECEIPT" server-receipt.xml &> /dev/null; then
     echo "   - server-receipt.txt (tabular format)" 
 
   else
-    echo "Submission was not successful!"
+    echo "Submission failed!"
     echo "See server receipt XML returned: server-receipt.xml."
     echo "Check the receipt for error messages and after making corrections, "
     echo "  try the submission again."

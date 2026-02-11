@@ -91,11 +91,11 @@ An experiment is part of a study and is associated with a sample. It is common t
 
 Mandatory metadata:
 
-* Experiment ID: an internal unique code, *e.g.*: exp_0000
+* Experiment ID: an internal unique code, *e.g.*: `exp_0000`
 * Title: a short title, free text
-* Project reference: the internal code of the project (*e.g.*: `proj_0000`) or the accession number of the submitted Project/Study (PRJEXXXXXXXX)
+* Project reference: the internal code of the project (*e.g.*: `proj_0000`) or the accession number of the submitted Project/Study (`PRJEBxxxxxx`)
 * Project status: either "internal" (internal code of the project) or "accession" (already submitted project)
-* Sample reference: the internal code of the sample (*e.g.*: `sample_0000`) or the accession number of the submited BioSample (SAMEAxxxxxxx)
+* Sample reference: the internal code of the sample (*e.g.*: `sample_0000`) or the accession number of the submited BioSample (`SAMEAxxxxxx`)
 * Sample status: either "internal" (internal code of the sample) or "accession" (already submitted sample)
 * Library name: an internal unique code describing the library, *e.g.*: `lib_0000`
 * Library strategy: controlled value describing the sequencing strategy, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-strategy), *e.g.*: `WGS`
@@ -123,7 +123,7 @@ Mandatory metadata:
 * filename_r1: path to read file 1
 * filename_r2: path to read file 2 (optional if single)
 
-## Generate XML files from the spreadsheet template
+## Generate XML files from the spreadsheet template (command line option)
 
 To generate the XML files from the spreadsheet metadata file use the following command:
 
@@ -133,11 +133,36 @@ To generate the XML files from the spreadsheet metadata file use the following c
 
 where `DATA_DIR` is the directory containing the data (sequencing-reads) and `OUT_DIR` is the output directory containing the generated XML files.
 
-## Submit the XML files to the ENA server
+## Upload your sequencing reads files to the ENA server (command line option)
 
-Using your ENA credentials (login:`Webin-XXXXX`, password:`YYYYYYYY`), submit your files to the server as follows:
+You must upload your sequencing reads files to the ENA ftp server using your ENA credentials (login:`Webin-XXXXX`, password:`YYYYYYYY`).
 
-First for testing/validation:
+Imagine you have your sequencing files present in the `DATA_DIR` directory.
+
+* Using ftp
+
+```sh
+ftp "ftp://Webin-XXXXX:YYYYYYYY@webin.ebi.ac.uk"
+mput DATA_DIR/*.fastq.gz
+bye
+```
+
+* Using curl, with parallel upload (`-P 4`, 4 parallel threads)
+
+```sh
+ls DATA_DIR/*.gz | xargs -n1 -P4 -I{} curl -T "{}" ftp://webin.ebi.ac.uk --user "Webin-XXXXX:YYYYYYYY"
+```
+
+## Submit the XML files to the ENA server (command line option)
+
+Using your ENA credentials (login:`Webin-XXXXX`, password:`YYYYYYYY`), submit your files to the server.
+
+Two servers are available for validation and submission, respectively:
+
+* Validation server: `https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/`
+* Submission server: `https://www.ebi.ac.uk/ena/submit/drop-box/submit/`
+
+First for testing/validation using the validation server:
 
 ```sh
 curl --user "Webin-XXXXX:YYYYYYYY" \
@@ -155,7 +180,13 @@ Look at the server receipt file to check the status of the validation:
 cat server-receipt.xml
 ```
 
-Then if validation is successful (`<STATUS>OK</STATUS>`), process to the submission:
+Then if validation is successful you should observe the `success="true"` in the following line:
+
+```xml
+<RECEIPT receiptDate="2018-06-18T09:50:23.984+01:00" submissionFile="submission-XXXX_1529311823984.xml" success="true">
+```
+
+You can now proceed to submit the files to the submission server:
 
 ```sh
 curl --user "Webin-XXXXX:YYYYYYYY" \
@@ -167,23 +198,23 @@ curl --user "Webin-XXXXX:YYYYYYYY" \
     --url "https://www.ebi.ac.uk/ena/submit/drop-box/submit/" > server-receipt.xml
 ```
 
-Look at the server receipt file to check the submission status:
+Look at the server receipt file (`server-receipt.xml`) to check the submission status:
 
 ```sh
 cat server-receipt.xml
 ```
 
-If validation is successful (`<STATUS>OK</STATUS>`), this file contains the accession numbers returned from the server.
+If validation is successful, this file contains the accession numbers returned from the server.
 
-## Extract the accession numbers
+## Extract the accession numbers (command line option)
 
-You can obtain the accession numbers in a tab-separated format (TSV) as follows:
+You can obtain the accession numbers in more convenient tab-separated format (TSV) as follows:
 
 ```sh
 ./parse-receipt.py --tsv --out acc-numbers.tsv server-receipt.xml
 ```
 
-## Using the `ena-submit.sh` script (alternative)
+## Using the `ena-submit.sh` script (alternative, automatic)
 
 This script automatises the following actions:
 
@@ -208,9 +239,9 @@ Please give the following information at the beginning of the script:
 
 If you have not submitted to Webin before, please create a [submission account](https://www.ebi.ac.uk/ena/submit/sra/#home).
 
-Create a file containing your ENA credentials. One line with your login (`Webin-XXXXX`) and password (`YYYYYY`) separated by a **space** character.
+Create a file containing your ENA credentials. One line with your login (`Webin-XXXXX`) and password (`YYYYYY`) separated by a **blank** space.
 
-e.g. `Webin-XXXXX YYYYYY`
+e.g. `Webin-XXXXX<blank>YYYYYY`
 
 Update this line accordingly in the script:
 
@@ -242,9 +273,9 @@ Use the following command to validate or submit your data:
 ./ena-submit.sh
 ```
 
-If everything is ok, you will see the message: `Submission was successful`. 
+If everything is ok, you will see the message: `Submission was successful`. Otherwise, you will see an error message: `Submission failed!`. Open the file `server-receipt.xml` to see the details and fix the errors.
 
-Otherwise, you will see an error message: `Submission was not successful!`. Open the file `server-receipt.xml` to see the details and fix the errors.
+The returned accession numbers are available in the file `server-receipt.txt`.
 
 ## Usage
 
