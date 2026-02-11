@@ -1,7 +1,15 @@
-# Scripts to generate XML files and to submit them to the European Nucleotide Archive (ENA) server
+# ENA Submission Tool: Spreadsheet-Based Workflow for Genomic Data Submission
 
-Submissions to ENA can be made using programmatic submission service using `cURL`. Submissions of different types (STUDY, SAMPLE, EXPERIMENT, RUN) can be made using XML files. The script `generate_xml.py` is used to generate these files. Informations used to generate XML are extracted from a more convenient Excel spreadsheet template (`spreadsheet_template.xlsx`). The XML receipt is further parsed using `parse-receipt.py` to
-extract accession numbers assigned by the service.
+This repository provides a streamlined workflow for submitting genomic sequencing data to the European Nucleotide Archive (ENA). Rather than manually creating XML files for ENA's programmatic submission service, users can fill out a convenient spreadsheet template with their project, sample, experiment, and run metadata. The included Python script (`generate_xml.py`) automatically generates the required XML files. After submitting, the XML receipt is further parsed using `parse-receipt.py` to extract accession numbers assigned by the service.
+
+We propose the `ena-submit.sh` script that automates the process:
+
+1. upload run files (fastq-reads files) to the ftp server (using `curl`),
+2. generate XML files (using `generate_xml.py`),
+3. submit the XML files to server (using `curl`),
+4. finally, parse the XML receipt (using `parse-receipt.py`)
+
+This approach simplifies the submission process while maintaining compatibility with ENA's standards and validation requirements.
 
 We encourage you to read the [ENA training modules](http://ena-docs.readthedocs.io/en/latest/index.html).
 
@@ -17,7 +25,7 @@ install:
 sudo apt-get install curl
 ```
 
-* python3:
+* python3 modules:
 
   * hashlib
   * yattag
@@ -38,11 +46,211 @@ The easiest option is to clone the repository:
 git clone https://github.com/bigey/ena-submit.git
 ```
 
+## Collects the submission metadata
+
+Use LibreOffice/MS-Excel to edit the submission metadata in the spreadsheet template file (`spreadsheet_template.xlsx`). 
+
+Use one sheet for each type of metadata (Study/Project, Sample, Experiment, Run):
+
+### Study/Project metadata
+
+A project (also referred to as a study) is used to group other objects together, so we will look into creating a project as a first step towards to submit ENA objects.
+
+* Project ID: this is a unique code to refer to your study - **mandatory**, *e.g.* proj_0000
+* Title: a descriptive short title - **mandatory**
+* Description: an abstract detailing the project - **mandatory**
+
+### Sample metadata
+
+Use one line per sample. ENA provides sample checklists which define all the mandatory and recommended attributes for specific types of samples. We do not define a checklist here, then the samples will be validated against the ENA default checklist [ERC000011](https://www.ebi.ac.uk/ena/data/view/ERC000011). This checklist contains many optional attributes that can help you to annotate your samples to the highest possible standard. You can find all the [checklists](http://www.ebi.ac.uk/ena/submit/checklists).
+
+Mandatory metadata:
+
+* Sample ID: an internal unique code - mandatory, *e.g.*: sam_0000
+* Title: sample name *e.g.*: Saccharomyces cerevisiae S288C
+* Scientific name: *e.g.*: Saccharomyces cerevisiae
+* Taxon ID: obtained from [NCBI taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy), *e.g.*: 4932
+* Geographic location (country and/or sea): see the list of [countries](http://insdc.org/country.html). Other possible values: ["not applicable", "not collected", "not provided"]
+* Collection date: format YYYY-MM-DD, YYYY-MM or YYYY. Other possible values: ["not applicable", "not collected", "not provided"]
+
+Optional metadata:
+
+* Common name: free text, *e.g.*: baker's yeast
+* Strain: free text
+* Culture collection: format `COLLECTION:ID`, *e.g.*: `CBS:512`
+* Sample description: free text
+* Collected by: free text
+* Geographic location (region and locality): free text
+* Isolation source: free text
+
+### Experiment metadata
+
+An experiment object represents both a library that is created from a sample and a sequencing experiment that has produced the sequencing reads. The experiment object contains details about the library protocols and sequencing experiment.
+
+An experiment is part of a study and is associated with a sample. It is common to have multiple libraries and sequencing experiments for a single sample. Experiments point to samples to allow sharing of sample information between multiple experiments.
+
+Mandatory metadata:
+
+* Experiment ID: an internal unique code, *e.g.*: exp_0000
+* Title: a short title, free text
+* Project reference: the internal code of the project (*e.g.*: `proj_0000`) or the accession number of the submitted Project/Study (PRJEXXXXXXXX)
+* Project status: either "internal" (internal code of the project) or "accession" (already submitted project)
+* Sample reference: the internal code of the sample (*e.g.*: `sample_0000`) or the accession number of the submited BioSample (SAMEAxxxxxxx)
+* Sample status: either "internal" (internal code of the sample) or "accession" (already submitted sample)
+* Library name: an internal unique code describing the library, *e.g.*: `lib_0000`
+* Library strategy: controlled value describing the sequencing strategy, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-strategy), *e.g.*: `WGS`
+* Library source: controlled value describing the source material, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-source), *e.g.*: `genomic DNA`
+* Library selection: controlled value describing the selection technics, see [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection), *e.g.*: `RANDOM`
+* Paired: is sequencing is paired ("yes") or unpaired/single ("no")
+* Library construction protocol: detailed protocol, free text
+* Platform: controlled value describing the sequencing platform used, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-platform), *e.g.*: `ILLUMINA`
+* Instrument model: controlled value describing the instrument model, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-instrument), *e.g.*: `Illumina HiSeq 2500`
+
+Optional metadata:
+
+* Insert size: average insert size (bp) - optional
+* Insert size SD: standard deviation of the insert size - optional
+
+### Run metadata
+
+The run points to an experiment using the experiment ID code (above, *e.g.*: `exp_0000`).
+
+Mandatory metadata:
+
+* Run ID: an internal unique code, *e.g.*: `run_0000`
+* Experiment reference: the internal code of the experiment, *e.g.*: `exp_0000`
+* filetype: one of fastq, bam or cram, *e.g.*: fastq
+* filename_r1: path to read file 1
+* filename_r2: path to read file 2 (optional if single)
+
+## Generate XML files from the spreadsheet template
+
+To generate the XML files from the spreadsheet metadata file use the following command:
+
+```sh
+./generate_xml.py --data_dir DATA_DIR --out_dir OUT_DIR spreadsheet_template.xlsx
+```
+
+where `DATA_DIR` is the directory containing the data (sequencing-reads) and `OUT_DIR` is the output directory containing the generated XML files.
+
+## Submit the XML files to the ENA server
+
+Using your ENA credentials (login:`Webin-XXXXX`, password:`YYYYYYYY`), submit your files to the server as follows:
+
+First for testing/validation:
+
+```sh
+curl --user "Webin-XXXXX:YYYYYYYY" \
+    -F "ACTION=ADD" \
+    -F "PROJECT=@data/project.xml" \
+    -F "SAMPLE=@data/sample.xml" \
+    -F "EXPERIMENT=@data/experiment.xml" \
+    -F "RUN=@data/run.xml" \
+    --url "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/" > server-receipt.xml
+```
+
+Look at the server receipt file to check the status of the validation:
+
+```sh
+cat server-receipt.xml
+```
+
+Then if validation is successful (`<STATUS>OK</STATUS>`), process to the submission:
+
+```sh
+curl --user "Webin-XXXXX:YYYYYYYY" \
+    -F "ACTION=ADD" \
+    -F "PROJECT=@data/project.xml" \
+    -F "SAMPLE=@data/sample.xml" \
+    -F "EXPERIMENT=@data/experiment.xml" \
+    -F "RUN=@data/run.xml" \
+    --url "https://www.ebi.ac.uk/ena/submit/drop-box/submit/" > server-receipt.xml
+```
+
+Look at the server receipt file to check the submission status:
+
+```sh
+cat server-receipt.xml
+```
+
+If validation is successful (`<STATUS>OK</STATUS>`), this file contains the accession numbers returned from the server.
+
+## Extract the accession numbers
+
+You can obtain the accession numbers in a tab-separated format (TSV) as follows:
+
+```sh
+./parse-receipt.py --tsv --out acc-numbers.tsv server-receipt.xml
+```
+
+## Using the `ena-submit.sh` script (alternative)
+
+This script automatises the following actions:
+
+1. upload run files (reads) to the ftp server (using `curl`),
+2. generate XML files (using `generate_xml.py`),
+3. submit the XML files to server (using `curl`),
+4. parse the XML receipt (using `parse-receipt.py`)
+
+Please give the following information at the beginning of the script:
+
+### Type of submission
+
++ `SUBMISSION="false"`, for testing. You'll use the testing server. We encourage you to first validate your data using this server,
++ `SUBMISSION="true"`, to submit your data. You'll use the submission server. This is a **real** submission!
+
+### Select the appropriate action
+
++ `ACTION="ADD"` is used to submit new data,
++ `ACTION="MODIFY"` is used to update submitted data
+
+### Create a credentials file
+
+If you have not submitted to Webin before, please create a [submission account](https://www.ebi.ac.uk/ena/submit/sra/#home).
+
+Create a file containing your ENA credentials. One line with your login (`Webin-XXXXX`) and password (`YYYYYY`) separated by a **space** character.
+
+e.g. `Webin-XXXXX YYYYYY`
+
+Update this line accordingly in the script:
+
+`CREDENTIAL="credential_file"`
+
+### Give the name of the spreadsheet file
+
+Give the name of the spreadsheet file containing your metadata:
+
+`TEMPLATE_XLS="spreadsheet_template.xlsx"`
+
+### Give the name of the directory containing data/sequencing reads
+
+This directory should contain the sequencing read files. This not mandatory but we recommend to place the read files in a subdirectory.
+
+`DATA_IN_DIR="data"`
+
+### Give the name of the directory containing the generated XML files
+
+Update if you want the XML files to be generated in another directory.
+
+`XML_OUT_DIR="xml"`
+
+### Submit your data
+
+Use the following command to validate or submit your data:
+
+```sh
+./ena-submit.sh
+```
+
+If everything is ok, you will see the message: `Submission was successful`. 
+
+Otherwise, you will see an error message: `Submission was not successful!`. Open the file `server-receipt.xml` to see the details and fix the errors.
+
 ## Usage
 
-### Generate XML files
+### `generate_xml.py`
 
-```{}
+```sh
 generate_xml.py [-h] [--data_dir DATA_DIR] [--out_dir OUT_DIR] SPREADSHEET_FILE
 
 Generate xml files to submit to ENA server
@@ -64,9 +272,9 @@ optional arguments:
                         Default: current dir
 ```
 
-### Parse the XML receipt of the server
+### `parse-receipt.py`
 
-```{}
+```sh
 parse-receipt.py [-h] [--tsv] [--out OUT_FILE] RECEIPT_XML
 
 Parse the XML data received from the submission server
@@ -86,134 +294,34 @@ optional arguments:
                         Default: stdout
 ```
 
-## Description
+## How to report issues?
 
-Use Excel to edit the submission informations in the spreadsheet template file (`spreadsheet_template.xlsx`). Use one sheat for each type of data:
+We welcome you to report any [issues](https://github.com/bigey/ena-submit/issues) in this document or script.
 
-### Project
+## Citing
 
-A project (also referred to as a study) is used to group other objects together, so we will look into creating a project as a first step towards to submit ENA objects.
+If you use this document or script in your research, please cite:
 
-* Project ID: this is a unique code to refer to your study - mandatory, *e.g.* proj_0000 - mandatory
-* Title: a descriptive short title - mandatory
-* Description: an abstract detailing the project - mandatory
+BibTeX
 
-### Sample
+```bibtex
+@misc{bigey2026,
+  author       = {Bigey, Frédéric},
+  title        = {ENA Submission Tool: Spreadsheet-Based Workflow for Genomic Data Submission},
+  year         = {2026},
+  howpublished = {\url{https://github.com/bigey/ena-submit}},
+  note         = {accessed 2026-02-11}
+}
+```
+Biblatex
 
-Use one line per sample. ENA provides sample checklists which define all the mandatory and recommended attributes for specific types of samples. We do not define a checklist here, then the samples will be validated against the ENA default checklist [ERC000011](https://www.ebi.ac.uk/ena/data/view/ERC000011). This checklist has virtually no mandatory fields but contains many optional attributes that can help you to annotate your samples to the highest possible standard. You can find all the [checklists](http://www.ebi.ac.uk/ena/submit/checklists).
-
-Mandatory:
-
-* Sample ID: an internal unique code - mandatory, *e.g.*: sam_0000
-* Title: sample name *e.g.*: Saccharomyces cerevisiae S288C
-* Scientific name: *e.g.*: Saccharomyces cerevisiae
-* Taxon ID: obtained from [NCBI taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy), *e.g.*: 4932
-* Geographic location (country and/or sea): see the list of [countries](http://insdc.org/country.html). Other possible values: ["not applicable", "not collected", "not provided"]
-* Collection date: format YYYY-MM-DD, YYYY-MM or YYYY. Other possible values: ["not applicable", "not collected", "not provided"]
-
-Optional:
-
-* Common name: free text, *e.g.*: baker's yeast
-* Strain: free text
-* Culture collection: format COLLECTION:ID, *e.g.*: CBS:512
-* Sample description: free text
-* Collected by: free text
-* Geographic location (region and locality): free text
-* Isolation source: free text
-
-### Experiment
-
-An experiment object represents both a library that is created from a sample and a sequencing experiment. The experiment object contains details about the sequencing platform and library protocols.
-An experiment is part of a study and is assocated with a sample. It is common to have multiple libraries and sequencing experiments for a single sample. Experiments point to samples to allow sharing of sample information between multiple experiments.
-
-Mandatory:
-
-* Experiment ID: an internal unique code, *e.g.*: exp_0000
-* Title: a short title, free text
-* Project reference: the internal code of the project (*e.g.*: proj_0000) or the accession number of the submitted Project/Study (PRJxxxxxxx)
-* Project status: either "internal" (internal code of the project) or "accession" (already submitted project)
-* Sample reference: the internal code of the sample (*e.g.*: sample_0000) or the accession number of the submited BioSample (SAMEAxxxxxxx)
-* Sample status: either "internal" (internal code of the sample) or "accession" (already submitted sample)
-* Library name: an internal unique code describing the library, *e.g.*: lib_0000
-* Library strategy: controlled value describing the sequencing strategy, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-strategy)
-* Library source: controlled value describing the source material, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-source)
-* Library selection: controlled value describing the selection technics, see [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-library-selection)
-* Paired: is sequencing is paired ("yes") or unpaired/single ("no")
-* Library construction protocol: detailed protocol, free text
-* Platform: controlled value describing the sequencing platform used, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-platform)
-* Instrument model: controlled value describing the instrument model, see this [document](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html#permitted-values-for-instrument)
-
-Optional:
-
-* Insert size: average insert size (bp) - optional
-* Insert size SD: standard deviation of the insert size - optional
-
-### Run
-
-The run points to an experiment using the experiment ID code.
-
-Mandatory:
-
-* Run ID: an internal unique code, *e.g.*: run_0000
-* Experiment reference: the internal code of the experiment, *e.g.*: exp_0000
-* filetype: one of fastq, bam or cram, *e.g.*: fastq
-* filename_r1: path to read file 1
-* filename_r2: path to read file 2 (optional if single)
-
-## Using the script `ena-submit.sh`
-
-### Utility
-
-This script can be used to:
-
-1. upload run files (reads) to the ftp server (using `curl`),
-2. generate XML files (using `generate_xml.py`),
-3. submit the XML files to server (using `curl`),
-4. parse the XML receipt (using `parse-receipt.py`)
-
-### Customization
-
-Please give the following parameters:
-
-#### Type of submission
-
-Select:
-
-* `TEST="true"` for testing. You'll use the testing server. We encourage you to first validate your data using this server,
-* `TEST="false"` to submit your data. You'll use the production server. This is a **real** submission!
-
-#### Select the appropriate action
-
-* `ACTION="ADD"` is used to submit new data,
-* `ACTION="MODIFY"` is used to update submited data
-
-#### ENA credentials
-
-If you have not submitted to Webin before, please register a [submission account](https://www.ebi.ac.uk/ena/submit/sra/#home).
-
-Create a file containing the credentials used to connect to the ENA
-server: one line with `user` and `password` separated by a space character:
-
-`user password`
-
-Update this line accordingly:
-
-`CREDENDIAL=".credential"`
-
-#### XLS spreadsheet
-
-The name of the spreadsheet file containing your data. You would start using the template spreadsheet given with the project.
-
-`TEMPLATE_XLS="spreadsheet_template.xlsx"`
-
-#### Directory containing data/reads
-
-This directory should contain the sequencing read files. Generally `*.fastq.gz` files.
-
-`DATA_IN_DIR="data"`
-
-#### Directory containing the generated XML files
-
-Update if you want the XMLs to be generated in another directory.
-
-`XML_OUT_DIR="xml"`
+```biblatex
+@software{bigey2026,
+  author       = {Bigey, Frédéric},
+  title        = {ENA Submission Tool: Spreadsheet-Based Workflow for Genomic Data Submission},
+  year         = {2026},
+  version      = {v1.0.0},
+  url          = {https://github.com/bigey/ena-submit},
+  note         = {accessed 2026-02-11}
+}
+```

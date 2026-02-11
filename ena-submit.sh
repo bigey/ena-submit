@@ -5,11 +5,11 @@ set -euo pipefail
 #                     Thank you to adapt information below                     #
 #------------------------------------------------------------------------------#
 
-# PRODUCTION or TESTING?
+# Submit or test?
 # One of the following:
 # "true": real data submission,
 # "false": submit to testing server 
-PRODUCTION="false"
+SUBMISSION="false"
 
 # EXPECTED ACTION
 # One of the following actions:
@@ -50,7 +50,7 @@ URL_PROD="https://www.ebi.ac.uk/ena/submit/drop-box/submit/"
 echo
 
 # SELECT SERVER
-if [ $PRODUCTION = "true" ]
+if [ $SUBMISSION = "true" ]
 then
   URL=$URL_PROD
   echo "This is a real submission..."
@@ -67,6 +67,7 @@ read user pass < $CREDENDIAL
 echo
 echo "# Upload data to ENA FTP server..."
 echo
+
 # curl --user $user:$pass --upload-file "{$(find $DATA_IN_DIR -name '*.gz' -printf '%p,' | sed 's/,$//')}" --url $FTP
 
 # GENERATE XML FILES
