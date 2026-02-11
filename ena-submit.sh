@@ -1,15 +1,15 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 #------------------------------------------------------------------------------#
 #                     Thank you to adapt information below                     #
 #------------------------------------------------------------------------------#
 
-# TEST/SUBMIT YOUR DATA
+# PRODUCTION or TESTING?
 # One of the following:
-# "true": submit to testing server, 
-# "false": real data submission
-TEST="false"
+# "true": real data submission,
+# "false": submit to testing server 
+PRODUCTION="false"
 
 # EXPECTED ACTION
 # One of the following actions:
@@ -50,7 +50,7 @@ URL_PROD="https://www.ebi.ac.uk/ena/submit/drop-box/submit/"
 echo
 
 # SELECT SERVER
-if [ $TEST = "false" ]
+if [ $PRODUCTION = "true" ]
 then
   URL=$URL_PROD
   echo "This is a real submission..."
