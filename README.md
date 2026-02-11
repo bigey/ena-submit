@@ -66,7 +66,7 @@ Use one line per sample. ENA provides sample checklists which define all the man
 
 Mandatory metadata:
 
-* Sample ID: an internal unique code - mandatory, *e.g.*: sam_0000
+* Sample ID: an internal unique code - mandatory, *e.g.*: `sam_0000`
 * Title: sample name *e.g.*: Saccharomyces cerevisiae S288C
 * Scientific name: *e.g.*: Saccharomyces cerevisiae
 * Taxon ID: obtained from [NCBI taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy), *e.g.*: 4932
@@ -123,7 +123,7 @@ Mandatory metadata:
 * filename_r1: path to read file 1
 * filename_r2: path to read file 2 (optional if single)
 
-## Generate XML files from the spreadsheet template (command line option)
+## Generate XML files (command line option)
 
 To generate the XML files from the spreadsheet metadata file use the following command:
 
@@ -186,7 +186,7 @@ Then if validation is successful you should observe the `success="true"` in the 
 <RECEIPT receiptDate="2018-06-18T09:50:23.984+01:00" submissionFile="submission-XXXX_1529311823984.xml" success="true">
 ```
 
-You can now proceed to submit the files to the submission server:
+You can now submit the files to the submission server:
 
 ```sh
 curl --user "Webin-XXXXX:YYYYYYYY" \
@@ -204,7 +204,7 @@ Look at the server receipt file (`server-receipt.xml`) to check the submission s
 cat server-receipt.xml
 ```
 
-If validation is successful, this file contains the accession numbers returned from the server.
+If successful, this file contains the accession numbers returned from the server.
 
 ## Extract the accession numbers (command line option)
 

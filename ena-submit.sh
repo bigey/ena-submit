@@ -87,15 +87,24 @@ files=""
 if [ -f $project ]; then
   echo "Project XML file: $project generated successfully."
   files="$file -F PROJECT=@${project} "
+else
+  echo "Project XML file: $project not found. Skipping project submission."
 fi
+
 if [ -f $sample ]; then
   echo "Sample XML file: $sample generated successfully."
   files="$files -F SAMPLE=@${sample} "
+else
+  echo "Sample XML file: $sample not found. Skipping sample submission."
 fi
+
 if [ -f $experiment ]; then
   echo "Experiment XML file: $experiment generated successfully."
   files="$files -F EXPERIMENT=@${experiment} "
+else
+  echo "Experiment XML file: $experiment not found. Skipping experiment submission."
 fi
+
 if [ -f $run ]; then
   echo "Run XML file: $run generated successfully."
   files="$files -F RUN=@${run} "
