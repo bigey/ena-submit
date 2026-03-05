@@ -74,14 +74,14 @@ echo
 echo
 echo "# Generate XML submission files..."
 echo
-./generate-xml.py -d $DATA_IN_DIR -o $XML_OUT_DIR $TEMPLATE_XLS
+./generate-xml.py -o $XML_OUT_DIR $TEMPLATE_XLS
 echo
 
 project=$XML_OUT_DIR/project.xml
 sample=$XML_OUT_DIR/sample.xml
 experiment=$XML_OUT_DIR/experiment.xml
 run=$XML_OUT_DIR/run.xml
-files=""
+files=" "
 
 # CHECK IF XML FILES WERE GENERATED
 if [ -f $project ]; then

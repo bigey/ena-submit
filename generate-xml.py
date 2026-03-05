@@ -10,17 +10,13 @@ def set_up_argparse():
 		description = """
 		Generate xml files to submit to ENA submission server
 		""")
-	
-	parser.add_argument("--data_dir", "-d", 
-		dest = "data_dir", default = os.getcwd(),
-		help = "directory containing the data (reads, assembly, ...). Default: current dir")
 
 	parser.add_argument("--out_dir", "-o", 
 		dest = "out_dir", default = os.getcwd(), 
 		help = "output directory containing the generated xml files. Default: current dir")
 
 	parser.add_argument("spreadsheet_file", metavar = "SPREADSHEET_FILE", 
-		help = "Excel spreadsheet file (xls, xlsx, ods)")
+		help = "MS-Excel spreadsheet file (xls, xlsx)")
 	
 	opts = parser.parse_args()
 	return opts
@@ -61,8 +57,12 @@ def _project_xml(projects):
 			# Check mandatory fields
 			# If any of the mandatory fields are missing, log an error and exit
 			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			
 			if isna(project["Project ID"]):
 				log(f"Project ID is a mandatory field, line index: {index}")
+				exit(1)
+			if isna(project["Name"]):
+				log(f"Name is a mandatory field, line index: {index}")
 				exit(1)
 			if isna(project["Title"]):
 				log(f"Title is a mandatory field, line index: {index}")
@@ -72,12 +72,12 @@ def _project_xml(projects):
 				exit(1)
 
 			with tag("PROJECT", alias = project["Project ID"]):
-				
+				with tag("NAME"):
+					text(project["Name"])
 				with tag("TITLE"):
 					text(project["Title"])
 				with tag("DESCRIPTION"):
 					text(project["Description"])
-				
 				with tag("SUBMISSION_PROJECT"):
 					doc.stag("SEQUENCING_PROJECT")
 	
@@ -96,6 +96,7 @@ def _sample_xml(samples):
 			# Check mandatory fields
 			# If any of the mandatory fields are missing, log an error and exit
 			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			
 			if isna(sample["Sample ID"]):
 				log(f"Sample ID is a mandatory field, line index: {index}")
 				exit(1)
@@ -316,7 +317,7 @@ def _experiment_xml(experiments):
 							text(experiment["Library construction protocol"])
 
 				with tag("PLATFORM"):
-					platforms = ["ILLUMINA", "BGISEQ", "OXFORD_NANOPORE", "PACBIO_SMRT", "ION_TORRENT", "CAPILLARY", "DNBSEQ"]
+					platforms = ["ILLUMINA", "BGISEQ", "OXFORD_NANOPORE", "PACBIO_SMRT", "ION_TORRENT", "CAPILLARY", "DNBSEQ", "ELEMENT"]
 					platform = experiment["Platform"].upper()
 					if platform not in platforms:
 						log(f"Platform should be one of {platforms} for experiment {experiment['Experiment ID']}, line index: {index}")
@@ -330,7 +331,7 @@ def _experiment_xml(experiments):
 	return(result)
 
 
-def _run_xml(runs, data_dir):
+def _run_xml(runs):
 	doc, tag, text = Doc().tagtext()
 
 	with tag("RUN_SET"):
@@ -341,6 +342,7 @@ def _run_xml(runs, data_dir):
 			# Check mandatory fields
 			# If any of the mandatory fields are missing, log an error and exit
 			# Note: isna() checks if the value is NaN (Not a Number), which is used for missing values in pandas
+			
 			if isna(run["Run ID"]):
 				log(f"Run ID is a mandatory field, line index: {index}")
 				exit(1)
@@ -353,8 +355,8 @@ def _run_xml(runs, data_dir):
 			if isna(run["filename_r1"]):
 				log(f"filename_r1 is a mandatory field, line index: {index}")
 				exit(1)
-			if not os.path.exists(data_dir+"/"+run["filename_r1"]):
-				log(f"File {run['filename_r1']} does not exist in the data directory ({data_dir}), line index: {index}")
+			if not os.path.exists(run["filename_r1"]):
+				log(f"File {run['filename_r1']} does not exist, line index: {index}")
 				exit(1)
 
 			with tag("RUN", alias = run["Run ID"]):
@@ -367,17 +369,17 @@ def _run_xml(runs, data_dir):
 					with tag("FILES"):
 
 						doc.stag("FILE", 
-							filename = run["filename_r1"],
+							filename = os.path.basename(run["filename_r1"]),
 							filetype = run["filetype"],
 							checksum_method = "MD5",
-							checksum = md5sum(data_dir+"/"+run["filename_r1"]))
+							checksum = md5sum(run["filename_r1"]))
 
 						if not isna(run["filename_r2"]):
 							doc.stag("FILE", 
-								filename = run["filename_r2"], 
+								filename = os.path.basename(run["filename_r2"]), 
 								filetype = run["filetype"],
 								checksum_method = "MD5",
-								checksum = md5sum(data_dir+"/"+run["filename_r2"]))
+								checksum = md5sum(run["filename_r2"]))
 	
 	result = indent(doc.getvalue())
 	return(result)
@@ -390,7 +392,7 @@ def to_dict(in_file, sheet):
 	return(return_dict)
 
 
-def generate_xml_files(in_file, data_dir, out_dir):
+def generate_xml_files(in_file, out_dir):
 	out_dir = os.path.normpath(out_dir)
 	log("Generating XML files...")
 
@@ -429,7 +431,7 @@ def generate_xml_files(in_file, data_dir, out_dir):
 				log("  No runs found in the spreadsheet. Skipping run XML generation.")
 				continue
 			with open(out_dir+"/run.xml", "w") as file:
-				file.write(_run_xml(runs, data_dir))
+				file.write(_run_xml(runs))
 
 
 def md5sum(filename, blocksize = 65536):
@@ -444,12 +446,11 @@ def md5sum(filename, blocksize = 65536):
 def main(opts):
 
 	# are files exist 
-	check_file_exists(opts.data_dir, "data directory")
 	check_file_exists(opts.spreadsheet_file, "spreadsheet file")
 	make_dir_if_not_exist(opts.out_dir)
 
 	# process data
-	generate_xml_files(opts.spreadsheet_file, opts.data_dir, opts.out_dir)
+	generate_xml_files(opts.spreadsheet_file, opts.out_dir)
 
 
 if __name__ == "__main__":
